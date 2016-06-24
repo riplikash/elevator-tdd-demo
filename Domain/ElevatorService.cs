@@ -9,18 +9,18 @@ namespace Domain
 {
     public class ElevatorService : IElevatorService
     {
-        private Timer timer = new Timer();
-        private volatile bool requestStop;
-        private IElevator elevator;
-        private readonly IElevatorInteriorInterface interiorInterface;
-        public readonly HashSet<int> upQueue = new HashSet<int>();
-        public readonly HashSet<int> downQueue = new HashSet<int>();
+        public HashSet<int> UpQueue { get; } = new HashSet<int>();
+        public HashSet<int> DownQueue { get; } = new HashSet<int>();
         private readonly List<IExternalCallInterface> externalCallInterfaces;
-        private string currentDirection = "";
-        private readonly ElevatorServiceUtilities elevatorServiceUtilities;
+        private DirectionEnum currentDirection = DirectionEnum.Stationary;
+        public int CurrentFloor { get; private set; }
+        public int TotalFloors { get;  }
 
-        public int CurrentFloor { get; set; }
-        public int TotalFloors { get; private set; }
+        private readonly Timer timer = new Timer();
+        private readonly ElevatorServiceUtilities elevatorServiceUtilities;
+        private volatile bool requestStop;
+        private readonly IElevator elevator;
+        private readonly IElevatorInteriorInterface interiorInterface;
 
         // TODO: move all utilities into single class and make them public so I can test them properlly.
         public ElevatorService(int totalFloors, List<IExternalCallInterface> externalCallInterfaces, IElevator elevator, IElevatorInteriorInterface interiorInterface)
@@ -47,7 +47,7 @@ namespace Domain
             // TODO: In elevator design like this it can be tricky to make sure that a customer will never actually get isolated, no matter how busy it is. 
             // Better do some reasearch and have someone else double check this to make sure I've completely avoided that scenario
             // Note: shouldn't need a lock due to this restarting its own timer, but I need to have someone cdouble check this
-            if (currentDirection != "")
+            if (currentDirection != DirectionEnum.Stationary)
             {
                 await PerformNecessaryDoorOperations().ConfigureAwait(false);
                 ClearDirectionIfNecessary();
@@ -63,12 +63,12 @@ namespace Domain
 
         private void DetermineNewDirection()
         {
-            if (downQueue.Contains(CurrentFloor))
+            if (DownQueue.Contains(CurrentFloor))
             {
-                currentDirection = "down";
-            } else if (upQueue.Contains(CurrentFloor))
+                currentDirection = DirectionEnum.Down;
+            } else if (UpQueue.Contains(CurrentFloor))
             {
-                currentDirection = "up";
+                currentDirection = DirectionEnum.Up;
             } else
             {
                 currentDirection = elevatorServiceUtilities.SelectMostAppropriateDirectionBasedOnHeuristic();
@@ -78,17 +78,17 @@ namespace Domain
         private void ClearDirectionIfNecessary()
         {
           
-            if (currentDirection.Equals("up"))
+            if (currentDirection.Equals(DirectionEnum.Up))
             {
                 if (elevatorServiceUtilities.IsAtApex())
                 {
-                    currentDirection = "";
+                    currentDirection = DirectionEnum.Stationary;
                 }
-            } else if (currentDirection.Equals("down"))
+            } else if (currentDirection.Equals(DirectionEnum.Down))
             {
                 if (elevatorServiceUtilities.IsAtNadir())
                 {
-                    currentDirection = "";
+                    currentDirection = DirectionEnum.Stationary;
                 }
             }
         }
@@ -97,22 +97,22 @@ namespace Domain
 
         private async Task PerformNecessaryDoorOperations()
         {
-            if (currentDirection.Equals("up") && upQueue.Contains(CurrentFloor))
+            if (currentDirection.Equals(DirectionEnum.Up) && UpQueue.Contains(CurrentFloor))
             {
-                while (upQueue.Contains(CurrentFloor)) // allows user(s) to re-open door if they hit the button again before door operation completes
+                while (UpQueue.Contains(CurrentFloor)) // allows user(s) to re-open door if they hit the button again before door operation completes
                 {
-                    upQueue.Remove(CurrentFloor);
+                    UpQueue.Remove(CurrentFloor);
                     await GetExternalCallInterfaceForFloor(CurrentFloor).DoorOpenEventHandlerAsync().ConfigureAwait(false);
                     Thread.Sleep(3000); // TODO: this is a magic value. Should be set in configuration somewhere
                     await GetExternalCallInterfaceForFloor(CurrentFloor).DoorCloseEventHandlerAsync().ConfigureAwait(false);
                     
                 }
 
-            } else if (currentDirection.Equals("down") && downQueue.Contains(CurrentFloor))
+            } else if (currentDirection.Equals(DirectionEnum.Down) && DownQueue.Contains(CurrentFloor))
             {
-                while (downQueue.Contains(CurrentFloor))
+                while (DownQueue.Contains(CurrentFloor))
                 {
-                    downQueue.Remove(CurrentFloor);
+                    DownQueue.Remove(CurrentFloor);
                     await GetExternalCallInterfaceForFloor(CurrentFloor).DoorOpenEventHandlerAsync().ConfigureAwait(false);
                     Thread.Sleep(3000); // TODO: this is a magic value. Should be set in configuration somewhere
                     await GetExternalCallInterfaceForFloor(CurrentFloor).DoorCloseEventHandlerAsync().ConfigureAwait(false);
@@ -132,9 +132,9 @@ namespace Domain
         {
             switch (currentDirection)
             {
-                case "":
+                case DirectionEnum.Stationary:
                     return;
-                case "up":
+                case DirectionEnum.Up:
                     await elevator.MoveUpAsync().ConfigureAwait(false);
                     CurrentFloor++;
                     await UpdateFloorDisplays().ConfigureAwait(false);
@@ -149,14 +149,14 @@ namespace Domain
         
         public Task UpCallRequestAsync(int floor)
         {
-            upQueue.Add(floor);
+            UpQueue.Add(floor);
             return Task.FromResult(0);
 
         }
 
         public Task DownCallRequestAsync(int floor)
         {
-            downQueue.Add(floor);
+            DownQueue.Add(floor);
             return Task.FromResult(0);
         }
 
@@ -181,4 +181,8 @@ namespace Domain
 
     }
 
+    public enum DirectionEnum
+    {
+        Up, Down, Stationary
+    }
 }

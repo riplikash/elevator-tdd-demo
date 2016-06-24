@@ -8,7 +8,7 @@ namespace DomainTests
     public class DemoElevatorTests
     {
         [Theory]
-        [AutoMoqData]
+        [DapperAutoData]
         public async void MoveUp_ReasonableDelay(DemoElevator elevator)
         {
             // Act
@@ -22,7 +22,7 @@ namespace DomainTests
         }
 
         [Theory]
-        [AutoMoqData]
+        [DapperAutoData]
         public async void MoveDown_ReasonableDelay(DemoElevator elevator)
         {
             // Act

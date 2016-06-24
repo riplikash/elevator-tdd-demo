@@ -9,7 +9,7 @@ namespace DomainTests
     public class ExternalCallInterfaceTests
     {
         [Theory]
-        [AutoMoqData]
+        [DapperAutoData]
         public async void UpCallButtonPress_ButtonIsPressed_CurrentFloorAddedToUpcallQueue(
             [Frozen] Mock<IElevatorService> elevatorService,
             ExternalCallInterface callInterface)
@@ -24,7 +24,7 @@ namespace DomainTests
         }
 
         [Theory]
-        [AutoMoqData]
+        [DapperAutoData]
         public async void DownCallButtonPress_ButtonIsPressed_CurrentFloorAddedToDowncallQueue(
             [Frozen] Mock<IElevatorService> elevatorService,
             ExternalCallInterface callInterface)
@@ -37,7 +37,7 @@ namespace DomainTests
         }
 
         [Theory]
-        [AutoMoqData]
+        [DapperAutoData]
         public async void FloorChangeEventHandler_EventHandlerEvoked_FloorDisplayUpdates(
             [Frozen] int floor,
             ExternalCallInterface callInterface)
@@ -52,7 +52,7 @@ namespace DomainTests
         }
 
         [Theory]
-        [AutoMoqData]
+        [DapperAutoData]
         public async void DoorOpenEventHandler_EventHandlerEvoked_DoorIsOpened(
             ExternalCallInterface callInterface)
         {
@@ -67,7 +67,7 @@ namespace DomainTests
         }
 
         [Theory]
-        [AutoMoqData]
+        [DapperAutoData]
         public async void DoorClosedEventHandler_EventHandlerEvoked_DoorIsClosed(
             ExternalCallInterface callInterface)
         {
@@ -82,7 +82,7 @@ namespace DomainTests
         }
 
         [Theory]
-        [AutoMoqData]
+        [DapperAutoData]
         public void IsDoorClosed_InitialConstruction_DoorIsClosed([Frozen] IElevatorService elevatorService,
             int totalFloors, int floor)
         {

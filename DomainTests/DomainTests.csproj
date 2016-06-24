@@ -91,17 +91,19 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AutoMoqDataAttribute.cs" />
     <Compile Include="DemoElevatorTests.cs" />
     <Compile Include="ElevatorInteriorInterfaceTests.cs" />
     <Compile Include="ElevatorServiceTests.cs" />
+    <Compile Include="ElevatorServiceUtilitiesTests.cs" />
     <Compile Include="ExternalCallInterfaceTests.cs" />
-    <Compile Include="MyCustomizations.cs" />
+    <Compile Include="DapperAutoDataAttribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Domain\Domain.csproj">

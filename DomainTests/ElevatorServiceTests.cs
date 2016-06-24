@@ -19,7 +19,7 @@ namespace DomainTests
         // if I hit the down button while the direction is up on the current floor the door should NOT open
         // inverse forf u
 
-        [Theory, AutoMoqData]
+        [Theory, DapperAutoData]
         public void Constructor_Instantiate_StartsOnFloorOne(List<IExternalCallInterface> floorInterface,
             IElevator elevator, IElevatorInteriorInterface interiorInterface)
         {
@@ -40,9 +40,9 @@ namespace DomainTests
 //            // Assert
 //        }
 
-        [Theory, AutoMoqData]
+        [Theory, DapperAutoData]
         public async void ArrivesAtFloor_DoorOpenIsCalled(
-            ElevatorService service)
+            IElevatorService service)
         {
             // Arrange
             var floorOneInterface = service.GetExternalCallInterfaceForFloor(1);
@@ -54,7 +54,7 @@ namespace DomainTests
             AssertDoorOpensWithinTimePeriod(floorOneInterface, 3000).Should().BeTrue();
         }
 
-        [Theory, AutoMoqData]
+        [Theory, DapperAutoData]
         private bool AssertDoorOpensWithinTimePeriod(IExternalCallInterface floorOneInterface, int milliseconds)
         {
             var watch = System.Diagnostics.Stopwatch.StartNew();
@@ -69,10 +69,10 @@ namespace DomainTests
             return false;
         }
 
-        [Theory, AutoMoqData]
+        [Theory, DapperAutoData]
         public async void FloorChange_FloorChangeEventHandlerCalledOnEachFloor(
             [Frozen] Mock<IElevator> elevator,
-            ElevatorService service)
+            IElevatorService service)
         {
             // Arrange
             var floorFiveInterface = service.GetExternalCallInterfaceForFloor(5);
@@ -85,7 +85,7 @@ namespace DomainTests
             elevator.Verify(x => x.MoveUpAsync(), Times.Exactly(service.TotalFloors - 1));
         }
 
-        [Theory, AutoMoqData]
+        [Theory, DapperAutoData]
         private Task WaitUntilDoorOpensAsync(IExternalCallInterface externalCallInterface)
         {
             var watch = System.Diagnostics.Stopwatch.StartNew();
@@ -100,10 +100,10 @@ namespace DomainTests
             throw new TimeoutException("Elevator never arrived");
         }
 
-        [Theory, AutoMoqData]
+        [Theory, DapperAutoData]
         public void GetInterfaceForFloor_FloorCallInterfacesHaveBeenInjected_CorrectInterfaceIsReturned(
             [Frozen] List<IExternalCallInterface> seedExternalCallInterfaces,
-            ElevatorService service)
+            IElevatorService service)
         {
             for (int i = 0; i < seedExternalCallInterfaces.Count; i++)
             {
@@ -115,11 +115,11 @@ namespace DomainTests
 
         #region UpCall
 
-        [Theory, AutoMoqData]
+        [Theory, DapperAutoData]
         public async void UpCall_elevatorIsBelowWithNoOtherCalls_ElevatorComesOnlyToThisFloor(
             [Frozen] List<Mock<IExternalCallInterface>> callInterfaces,
             [Frozen] Mock<IElevator> elevator,
-            ElevatorService service)
+            IElevatorService service)
         {
             // Arrange
 
@@ -134,10 +134,10 @@ namespace DomainTests
             callInterfaces[4].Verify(x => x.DoorOpenEventHandlerAsync(), Times.Once);
         }
 
-        [Theory, AutoMoqData]
+        [Theory, DapperAutoData]
         public async void UpCall_ElevatorIsBelowWithNoOtherCalls_ElevatorIsMovedUpCorrectAmountOfTimes(
             [Frozen] Mock<IElevator> elevator,
-            ElevatorService service
+            IElevatorService service
             )
         {
             // Arrange
@@ -150,10 +150,10 @@ namespace DomainTests
             elevator.Verify(x => x.MoveUpAsync(), Times.Exactly(4));
         }
 
-        [Theory, AutoMoqData]
+        [Theory, DapperAutoData]
         public async void UpCall_ElevatorIsBelowWithUpCallsBelow_ElevatorStopsAtFloorsInOrder(
             [Frozen] Mock<IElevator> elevator,
-            ElevatorService service)
+            IElevatorService service)
         {
             // Arrange
             await service.StopAsync().ConfigureAwait(false);
