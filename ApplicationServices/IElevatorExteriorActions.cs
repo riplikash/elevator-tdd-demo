@@ -7,7 +7,7 @@ namespace ApplicationServices
 {
     public interface IElevatorExteriorActions : IPersonActions
     {
-        Task PushGoingUpButtoAsync();
+        Task PushGoingUpButtonAsync();
         Task PushGoingDownButtonAsync();
     }
 }
