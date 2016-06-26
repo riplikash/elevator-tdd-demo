@@ -1,4 +1,5 @@
 ﻿using Alexprof.AutoMoq;
+using Domain;
 using Ploeh.AutoFixture;
 using Ploeh.AutoFixture.AutoMoq;
 
@@ -29,6 +30,7 @@ namespace ApplicationServices.Tests
                 fixture.RepeatCount = 5;
                 fixture.Customize(new MultipleCustomization())
                     .Customize(new AutoConfiguredMoqCustomization());
+               
             }
         }
     }

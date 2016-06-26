@@ -11,21 +11,21 @@ namespace ApplicationServices
 {
     public class PersonActions : IPersonActions
     {
-        private readonly IElevatorService elevatorService;
-        private  ICallPanel callPanel;
-        private readonly IElevatorControls controls;
-        private bool inElevator = false;
+        internal readonly IElevatorService ElevatorService;
+        internal  ICallPanel callPanel;
+        internal readonly IElevatorControls controls;
+        internal bool inElevator = false;
 
         public PersonActions(IElevatorService elevatorService, ICallPanel callPanel, IElevatorControls controls)
         {
-            this.elevatorService = elevatorService;
+            this.ElevatorService = elevatorService;
             this.callPanel = callPanel;
             this.controls = controls;
         }
 
         public string CheckElevatorPositionAsync()
         {
-            return elevatorService.CurrentFloor.ToString();
+            return ElevatorService.CurrentFloor.ToString();
         }
 
         public string CheckSurroundings()

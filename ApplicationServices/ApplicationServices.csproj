@@ -40,6 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ElevatorInteriorActions.cs" />
     <Compile Include="IElevatorExteriorActions.cs" />
     <Compile Include="IElevatorInteriorActions.cs" />
     <Compile Include="IPersonActions.cs" />
