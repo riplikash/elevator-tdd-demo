@@ -24,7 +24,7 @@ namespace DomainTests
             IElevator elevator, IElevatorControls controls)
         {
             // Act
-            var service = new ElevatorService(5, floorInterface, elevator, controls);
+            var service = new ElevatorService(floorInterface, elevator, controls);
 
             // Assert
             service.CurrentFloor.Should().Be(1);
@@ -38,7 +38,7 @@ namespace DomainTests
             IElevatorControls controls)
         {
             // Arrange
-            ElevatorService service = new ElevatorService(2, new List<ICallPanel> {panel1.Object, panel2.Object}, elevator, controls);
+            ElevatorService service = new ElevatorService(new List<ICallPanel> {panel1.Object, panel2.Object}, elevator, controls);
             await service.StartAsync().ConfigureAwait(false);
 
             // Act
@@ -97,7 +97,7 @@ namespace DomainTests
             IElevator elevator,
             IElevatorControls controls)
         {
-            var service = new ElevatorService(seedExternalCallInterfaces.Count, seedExternalCallInterfaces, elevator, controls);
+            var service = new ElevatorService(seedExternalCallInterfaces, elevator, controls);
             for (int i = 0; i < seedExternalCallInterfaces.Count; i++)
             {
                 service.GetCallPanelForFloor(i + 1).Should().Be(seedExternalCallInterfaces[i]);
@@ -116,7 +116,7 @@ namespace DomainTests
         {
             // Arrange
             List<ICallPanel> callPanels = callInterfaces.Select(x => x.Object).ToList(); 
-            var service = new ElevatorService(callInterfaces.Count, callPanels, elevator, controls);
+            var service = new ElevatorService(callPanels, elevator, controls);
             await service.StartAsync().ConfigureAwait(false);
 
             // Act

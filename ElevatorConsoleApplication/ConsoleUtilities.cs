@@ -40,13 +40,22 @@ namespace ElevatorConsoleApplication
 
         public static int GetChoiceFromUser(string message, params string[] options)
         {
-            int rtChoice = -1;
+            int rtChoice;
             Console.WriteLine(message);
-            Console.Write($"Select 1-{options.Length}: ");
+            
             while (true)
             {
+                Console.Write($"Select 1-{options.Length}: ");
                 rtChoice = GetIntFromUser();
-//                if (rtChoice < 0 || rtChoice > options.Length) 
+                if (rtChoice < 0 || rtChoice > options.Length)
+                {
+                    Console.WriteLine($"Invalid selection. you must select select an option from 1-{options.Length}");
+                }
+                else
+                {
+                    break;
+                }
+
             }
 
             return rtChoice;

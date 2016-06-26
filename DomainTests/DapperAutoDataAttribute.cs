@@ -33,7 +33,7 @@ namespace DomainTests
                     fixture.Customize(new MultipleCustomization())
                         .Customize(new AutoConfiguredMoqCustomization());
                     fixture.RepeatCount = 5;
-                    fixture.Register(() => new ElevatorService(5, fixture.Create<List<ICallPanel>>(), fixture.Create<IElevator>(), fixture.Create<IElevatorControls>()));
+                    fixture.Register(() => new ElevatorService(fixture.Create<List<ICallPanel>>(), fixture.Create<IElevator>(), fixture.Create<IElevatorControls>()));
                     //            fixture.Register(() => new List<callPanel>
                     //            {
                     //                new callPanel(fixture.Create<IElevatorService>(), 1, 5),
@@ -42,7 +42,7 @@ namespace DomainTests
                     //                new callPanel(fixture.Create<IElevatorService>(), 4, 5),
                     //                new callPanel(fixture.Create<IElevatorService>(), 5, 5)
                     //            });
-                    fixture.Register(() => new CallPanel(fixture.Create<IElevatorService>(), new Random().Next(1, 5), 5));
+                    fixture.Register(() => new CallPanel(fixture.Create<IElevatorService>()));
                 }
             }
         }

@@ -87,7 +87,7 @@ namespace DomainTests
             int totalFloors, int floor)
         {
             // Arrange
-            var callInterface = new CallPanel(elevatorService, floor, totalFloors);
+            var callInterface = new CallPanel(elevatorService);
 
             // Act
 

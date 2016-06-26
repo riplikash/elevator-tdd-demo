@@ -12,7 +12,7 @@ namespace Domain
     {
         public HashSet<int> UpQueue { get; } = new HashSet<int>();
         public HashSet<int> DownQueue { get; } = new HashSet<int>();
-        private readonly List<ICallPanel> externalCallInterfaces;
+        private readonly List<ICallPanel> exteriorCallPanels;
         private DirectionEnum currentDirection = DirectionEnum.Stationary;
         public int CurrentFloor { get; private set; }
         public int TotalFloors { get;  }
@@ -23,17 +23,15 @@ namespace Domain
         private readonly IElevator elevator;
         private readonly IElevatorControls controls;
 
-        // TODO: total floors can be inferred from ICallPanel list
-        public ElevatorService(int totalFloors, List<ICallPanel> externalCallInterfaces, IElevator elevator, IElevatorControls controls)
+        public ElevatorService(List<ICallPanel> exteriorCallPanels, IElevator elevator, IElevatorControls controls)
         {
             CurrentFloor = 1;
-            TotalFloors = totalFloors;
-            this.externalCallInterfaces = externalCallInterfaces;
+            TotalFloors = exteriorCallPanels.Count;
+            this.exteriorCallPanels = exteriorCallPanels;
             this.elevator = elevator;
             this.controls = controls;
             SetupTimer();
             elevatorServiceUtilities = new ElevatorServiceUtilities(this);
-            // TODO: need better way to get floor interfaces while still being able to mock them
         }
 
         private void SetupTimer()
@@ -128,7 +126,7 @@ namespace Domain
 
         private async Task UpdateFloorDisplays()
         {
-            foreach (var floorInterface in externalCallInterfaces)
+            foreach (var floorInterface in exteriorCallPanels)
             {
                 await floorInterface.FloorChangeEventHandlerAsync(CurrentFloor).ConfigureAwait(false);
             }
@@ -172,7 +170,7 @@ namespace Domain
 
         public ICallPanel GetCallPanelForFloor(int i)
         {
-            return externalCallInterfaces[i - 1];
+            return exteriorCallPanels[i - 1];
         }
 
         public Task StopAsync()

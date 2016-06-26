@@ -8,31 +8,31 @@ namespace Domain
 {
     public class CallPanel : ICallPanel
     {
-        private readonly IElevatorService _elevatorService;
+        private static int _floorCounter;
+        private readonly IElevatorService elevatorService;
         public string ElevatorFloorDisplay { get; private set; }
-        public CallPanel(IElevatorService elevatorService, int floor, int totalFloors)
+        public CallPanel(IElevatorService elevatorService)
         {
-            _elevatorService = elevatorService;
-            Floor = floor;
-            TotalFloors = totalFloors;
+            this.elevatorService = elevatorService;
+            Floor = System.Threading.Interlocked.Increment(ref _floorCounter); ;
             IsDoorOpen = false;
             ElevatorFloorDisplay = "";
         }
 
         public int Floor { get; }
-        public int TotalFloors { get; }
+        public int TotalFloors => elevatorService.TotalFloors;
 
         public bool IsDoorOpen { get; private set; }
 
 
         public async Task PushUpCallAsync()
         {
-            await _elevatorService.UpCallRequestAsync(Floor).ConfigureAwait(false);
+            await elevatorService.UpCallRequestAsync(Floor).ConfigureAwait(false);
         }
 
         public async Task PushDownCallAsync()
         {
-            await _elevatorService.DownCallRequestAsync(Floor).ConfigureAwait(false);
+            await elevatorService.DownCallRequestAsync(Floor).ConfigureAwait(false);
         }
 
         public Task FloorChangeEventHandlerAsync(int newFloor)
