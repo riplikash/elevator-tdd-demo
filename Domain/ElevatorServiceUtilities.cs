@@ -13,7 +13,7 @@ namespace Domain
 
         public DirectionEnum SelectMostAppropriateDirectionBasedOnHeuristic()
         {
-            DirectionEnum rtValue = GetClosestDirectionWhereCallAndDirectionAreSame();
+            var rtValue = GetClosestDirectionWhereCallAndDirectionAreSame();
             if (rtValue == DirectionEnum.Stationary)
                 rtValue = GetFurthestDirectionWhereCallAndDirectionAreDifferent();
             return rtValue;
@@ -21,13 +21,12 @@ namespace Domain
 
         public DirectionEnum GetFurthestDirectionWhereCallAndDirectionAreDifferent()
         {
-            DirectionEnum direction;
-            int? furthestDowncall = GetFurthestDowncallAboveCurrentFloor();
-            int? furthestUpcall = GetFurthestUpcallBelowCurrentFloor();
+            var furthestDowncall = GetFurthestDowncallAboveCurrentFloor();
+            var furthestUpcall = GetFurthestUpcallBelowCurrentFloor();
             if (furthestUpcall == null && furthestDowncall == null) return DirectionEnum.Stationary;
 
-            if (furthestUpcall == null && furthestDowncall != null) return DirectionEnum.Up;
-            if (furthestDowncall == null && furthestUpcall != null) return DirectionEnum.Down;
+            if (furthestUpcall == null) return DirectionEnum.Up;
+            if (furthestDowncall == null) return DirectionEnum.Down;
 
             var distanceToUpcall = elevatorService.CurrentFloor - furthestUpcall.Value;
             var distanceToDowncall = furthestDowncall - elevatorService.CurrentFloor ;
@@ -38,7 +37,7 @@ namespace Domain
 
         public int? GetFurthestUpcallBelowCurrentFloor()
         {
-            for (int i = 1; i < elevatorService.CurrentFloor; i++)
+            for (var i = 1; i < elevatorService.CurrentFloor; i++)
             {
                 if (elevatorService.UpQueue.Contains(i)) return i;
             }
@@ -47,7 +46,7 @@ namespace Domain
 
         public int? GetFurthestDowncallAboveCurrentFloor()
         {
-            for (int i = elevatorService.TotalFloors; i > elevatorService.CurrentFloor; i--)
+            for (var i = elevatorService.TotalFloors; i > elevatorService.CurrentFloor; i--)
             {
                 if (elevatorService.DownQueue.Contains(i)) return i;
             }
@@ -56,8 +55,8 @@ namespace Domain
 
         public DirectionEnum GetClosestDirectionWhereCallAndDirectionAreSame()
         {
-            int? closestUpcallAboveCurrentFloor = GetClosestUpcallAboveCurrentFloor();
-            int? closestDowncallBelowCurrentFloor = GetClosestDowncallBelowCurrentFloor();
+            var closestUpcallAboveCurrentFloor = GetClosestUpcallAboveCurrentFloor();
+            var closestDowncallBelowCurrentFloor = GetClosestDowncallBelowCurrentFloor();
 
             // If there are no upcalls above or downcalls below we select nothing
             if (closestDowncallBelowCurrentFloor == null && closestUpcallAboveCurrentFloor == null) return DirectionEnum.Stationary;
@@ -89,7 +88,7 @@ namespace Domain
 
         public int? GetClosestDowncallBelowCurrentFloor()
         {
-            for (int i = elevatorService.CurrentFloor - 1; i >= 1; i--)
+            for (var i = elevatorService.CurrentFloor - 1; i >= 1; i--)
             {
                 if (elevatorService.DownQueue.Contains(i)) return i;
             }
@@ -98,7 +97,7 @@ namespace Domain
 
         public int? GetClosestUpcallAboveCurrentFloor()
         {
-            for (int i = elevatorService.CurrentFloor + 1; i <= elevatorService.TotalFloors; i++)
+            for (var i = elevatorService.CurrentFloor + 1; i <= elevatorService.TotalFloors; i++)
             {
                 if (elevatorService.UpQueue.Contains(i)) return i;
             }
@@ -120,7 +119,7 @@ namespace Domain
         public bool IsThereAnUpcallBelowCurrentFloor()
         {
             if (elevatorService.CurrentFloor == 1) return false;
-            for (int i = elevatorService.CurrentFloor - 1; i >= 1; i--)
+            for (var i = elevatorService.CurrentFloor - 1; i >= 1; i--)
             {
                 if (elevatorService.UpQueue.Contains(i)) return true;
             }
@@ -130,7 +129,7 @@ namespace Domain
         public bool IsThereADowncallBelowCurrentFloor()
         {
             if (elevatorService.CurrentFloor == 1) return false;
-            for (int i = elevatorService.CurrentFloor -1; i >= 1; i--)
+            for (var i = elevatorService.CurrentFloor -1; i >= 1; i--)
             {
                 if (elevatorService.DownQueue.Contains(i)) return true;
             }
@@ -140,7 +139,7 @@ namespace Domain
         public bool IsThereAnUpcallAboveCurrentFloor()
         {
             if (elevatorService.CurrentFloor == elevatorService.TotalFloors) return false;
-            for (int i = elevatorService.CurrentFloor + 1; i <= elevatorService.TotalFloors; i++)
+            for (var i = elevatorService.CurrentFloor + 1; i <= elevatorService.TotalFloors; i++)
             {
                 if (elevatorService.UpQueue.Contains(i)) return true;
             }
@@ -150,7 +149,7 @@ namespace Domain
         public bool IsThereADowncallAboveCurrentFloor()
         {
             if (elevatorService.CurrentFloor == elevatorService.TotalFloors) return false;
-            for (int i = elevatorService.CurrentFloor + 1; i <= elevatorService.TotalFloors; i++)
+            for (var i = elevatorService.CurrentFloor + 1; i <= elevatorService.TotalFloors; i++)
             {
                 if (elevatorService.DownQueue.Contains(i)) return true;
             }

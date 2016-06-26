@@ -6,38 +6,32 @@ namespace Domain
     public class ElevatorControls : IElevatorControls
     {
         private readonly IElevatorService elevatorService;
-        private int currentFloor;
-        public ElevatorControls(int currentFloor, IElevatorService elevatorService, int totalFloors)
+
+        public ElevatorControls(IElevatorService elevatorService)
         {
-            this.currentFloor = currentFloor;
             this.elevatorService = elevatorService;
-            TotalFloors = totalFloors;
         }
-        // TODO: make more generic interface
-        public async Task PushFloorButtonAsync(int floor)
+
+        public async Task PushButtonNumberAsync(int floor)
         {
             await SubmitCallForCurrentFloor(floor).ConfigureAwait(false);
         }
         
 
-        private async Task SubmitCallForCurrentFloor(int buttonPushed)
+        private async Task SubmitCallForCurrentFloor(int desiredFloor)
         {
-            if (currentFloor > buttonPushed) await elevatorService.DownCallRequestAsync(buttonPushed).ConfigureAwait(false);
-            else if (currentFloor < buttonPushed) await elevatorService.UpCallRequestAsync(buttonPushed).ConfigureAwait(false);
+            if (elevatorService.CurrentFloor > desiredFloor)
+            {
+                await elevatorService.DownCallRequestAsync(desiredFloor).ConfigureAwait(false);
+            }
+            else
+            {
+                await elevatorService.UpCallRequestAsync(desiredFloor).ConfigureAwait(false);
+            }
         }
 
-       
+        public int TotalFloors => elevatorService.TotalFloors;
 
-        public Task FloorUpdateEventHandlerAsync(int newFloor)
-        {
-            if (newFloor > TotalFloors || newFloor < 1) throw new ArgumentOutOfRangeException(
-                $"newFloor must be between 1 and {TotalFloors}");
-            currentFloor = newFloor;
-            return Task.FromResult(0);
-        }
-
-        public int TotalFloors { get;  }
-
-        public string FloorDisplay => currentFloor.ToString();
+        public string FloorDisplay => elevatorService.CurrentFloor.ToString();
     }
 }

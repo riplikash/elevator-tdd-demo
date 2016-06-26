@@ -4,11 +4,8 @@ namespace Domain
 {
     public interface IElevatorControls
     {
-        Task PushFloorButtonAsync(int floor);
-        Task FloorUpdateEventHandlerAsync(int newFloor);
+        Task PushButtonNumberAsync(int floor);
         string FloorDisplay { get; }
 
-        // TODO: internal display
-        // TODO: internal doors (?)
     }
 }

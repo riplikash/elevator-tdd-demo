@@ -10,192 +10,85 @@ namespace DomainTests
 {
     public class ElevatorControlsTests
     {
-
-
-        #region PushButton1Async
-        // TODO: really should use inline data and test both floors 1 & 2
-    
-        [Theory, DapperAutoData]
-        public async void PushButton1Async_CalledFromFloor5_Floor3AddedToDownQueue(
-            [Frozen] Mock<IElevatorService> elevatorService,
-            ElevatorControls controls)
-        {
-            // Arrange
-            await controls.FloorUpdateEventHandlerAsync(5).ConfigureAwait(false);
-
-            // Act
-            await controls.PushFloorButtonAsync(1).ConfigureAwait(false);
-
-            // Assert
-            elevatorService.Verify(x => x.DownCallRequestAsync(1), Times.Once);
-            elevatorService.Verify(x => x.UpCallRequestAsync(1), Times.Never);
-
-        }
-
-        [Theory, DapperAutoData]
-        public async void PushButton1Async_CalledFromFloor1_NothingHappens(
-            [Frozen] Mock<IElevatorService> elevatorService,
-            ElevatorControls controls)
-        {
-            // Arrange
-            await controls.FloorUpdateEventHandlerAsync(1).ConfigureAwait(false);
-
-            // Act
-            await controls.PushFloorButtonAsync(1).ConfigureAwait(false);
-
-            // Assert
-            elevatorService.Verify(x => x.UpCallRequestAsync(3), Times.Never);
-            elevatorService.Verify(x => x.DownCallRequestAsync(1), Times.Never);
-
-        }
-
-        #endregion
-        #region PushButton2Async
-        // TODO: really should use inline data and test both floors 1 & 2
-        [Theory, DapperAutoData]
-
-        public async void PushButton2Async_CalledFromFloor1_Floor3AddedToUpQueue(
-            [Frozen] Mock<IElevatorService> elevatorService,
-            ElevatorControls controls)
-        {
-            // Arrange
-            await controls.FloorUpdateEventHandlerAsync(1).ConfigureAwait(false);
-
-            // Act
-            await controls.PushFloorButtonAsync(2).ConfigureAwait(false);
-
-            // Assert
-            elevatorService.Verify(x => x.UpCallRequestAsync(2), Times.Once);
-            elevatorService.Verify(x => x.DownCallRequestAsync(2), Times.Never);
-
-        }
-
-        [Theory, DapperAutoData]
-        public async void PushButton2Async_CalledFromFloor5_Floor3AddedToDownQueue(
-            [Frozen] Mock<IElevatorService> elevatorService,
-            ElevatorControls controls)
-        {
-            // Arrange
-            await controls.FloorUpdateEventHandlerAsync(5).ConfigureAwait(false);
-
-            // Act
-            await controls.PushFloorButtonAsync(2).ConfigureAwait(false);
-
-            // Assert
-            elevatorService.Verify(x => x.DownCallRequestAsync(2), Times.Once);
-            elevatorService.Verify(x => x.UpCallRequestAsync(2), Times.Never);
-
-        }
-
-        [Theory, DapperAutoData]
-        public async void PushButton2Async_CalledFromFloor3_NothingHappens(
-            [Frozen] Mock<IElevatorService> elevatorService,
-            ElevatorControls controls)
-        {
-            // Arrange
-            await controls.FloorUpdateEventHandlerAsync(2).ConfigureAwait(false);
-
-            // Act
-            await controls.PushFloorButtonAsync(2).ConfigureAwait(false);
-
-            // Assert
-            elevatorService.Verify(x => x.UpCallRequestAsync(2), Times.Never);
-            elevatorService.Verify(x => x.DownCallRequestAsync(2), Times.Never);
-
-        }
-
-        #endregion
-
-        #region PushButton3Async
-        // TODO: really should use inline data and test both floors 1 & 2
-        [Theory, DapperAutoData]
-
-        public async void PushButton3Async_CalledFromFloor1_Floor3AddedToUpQueue(
-            [Frozen] Mock<IElevatorService> elevatorService,
-            ElevatorControls controls)
-        {
-            // Arrange
-            await controls.FloorUpdateEventHandlerAsync(1).ConfigureAwait(false);
-
-            // Act
-            await controls.PushFloorButtonAsync(3).ConfigureAwait(false);
-
-            // Assert
-            elevatorService.Verify(x => x.UpCallRequestAsync(3), Times.Once);
-            elevatorService.Verify(x => x.DownCallRequestAsync(3), Times.Never);
-
-        }
-
-        [Theory, DapperAutoData]
-        public async void PushButton3Async_CalledFromFloor5_Floor3AddedToDownQueue(
-            [Frozen] Mock<IElevatorService> elevatorService,
-            ElevatorControls controls)
-        {
-            // Arrange
-            await controls.FloorUpdateEventHandlerAsync(5).ConfigureAwait(false);
-
-            // Act
-            await controls.PushFloorButtonAsync(3).ConfigureAwait(false);
-
-            // Assert
-            elevatorService.Verify(x => x.DownCallRequestAsync(3), Times.Once);
-            elevatorService.Verify(x => x.UpCallRequestAsync(3), Times.Never);
-
-        }
-
-        [Theory, DapperAutoData]
-        public async void PushButton3Async_CalledFromFloor3_NothingHappens(
-            [Frozen] Mock<IElevatorService> elevatorService,
-            ElevatorControls controls)
-        {
-            // Arrange
-            await controls.FloorUpdateEventHandlerAsync(3).ConfigureAwait(false);
-
-            // Act
-            await controls.PushFloorButtonAsync(3).ConfigureAwait(false);
-
-            // Assert
-            elevatorService.Verify(x => x.UpCallRequestAsync(3), Times.Never);
-            elevatorService.Verify(x => x.DownCallRequestAsync(3), Times.Never);
-
-        }
-
-        #endregion
-
-
-        // TODO: repeat for other four buttons
-
-        [Theory, DapperAutoData]
-        public async void FloorUpdateEventHandlerAsync_MethodCalled_CurrentFloorUpdates(
-            ElevatorControls controls)
-        {
-            // Arrange
-            int floor = new Random().Next(1, 5);
-
-            // Act
-            await controls.FloorUpdateEventHandlerAsync(floor).ConfigureAwait(false);
-
-            // Assert
-            controls.FloorDisplay.Should().Be(floor.ToString());
-
-        }
-
-        // TODO: Get inlineAutoData tests running
         [Theory]
-        [DapperAutoData(0)]
-        [DapperAutoData(int.MaxValue)]
-        public void FloorUpdateEventHandlerAsync_OutOfRange_ThrowsoutOfrangeException(
-            int newFloor,
-            ElevatorControls controls)
+        [DapperAutoData(5, 1)]
+        [DapperAutoData(5, 4)]
+        [DapperAutoData(4, 3)]
+        [DapperAutoData(4, 2)]
+        [DapperAutoData(3, 2)]
+        [DapperAutoData(2, 1)]
+        public async void PushButton_FloorAbove_AddDownCallRequest(
+            int currentFloor,
+            int desiredFloor,
+            [Frozen] Mock<IElevatorService> elevatorService,
+            ElevatorControls elevator)
         {
-            // Arrange
+            // arrange
+            elevatorService.Setup(x => x.CurrentFloor).Returns(currentFloor);
 
-            // Act
-            Func<Task> act = async () => await controls.FloorUpdateEventHandlerAsync(newFloor).ConfigureAwait(false);
+            // act
+            switch (desiredFloor)
+            {
+                case 1:
+                    await elevator.PushButtonNumberAsync(1).ConfigureAwait(false);
+                    break;
+                case 2:
+                    await elevator.PushButtonNumberAsync(2).ConfigureAwait(false);
+                    break;
+                case 3:
+                    await elevator.PushButtonNumberAsync(3).ConfigureAwait(false);
+                    break;
+                case 4:
+                    await elevator.PushButtonNumberAsync(4).ConfigureAwait(false);
+                    break;
+            }
 
-            // Assert
-            act.ShouldThrow<Exception>();
+            // assert
+            elevatorService.Verify(x => x.DownCallRequestAsync(desiredFloor), Times.Once);
+        }
 
+        [Theory]
+        [DapperAutoData(1, 1)]
+        [DapperAutoData(1, 2)]
+        [DapperAutoData(1, 3)]
+        [DapperAutoData(1, 4)]
+        [DapperAutoData(1, 5)]
+        [DapperAutoData(2, 2)]
+        [DapperAutoData(2, 5)]
+        [DapperAutoData(3, 5)]
+        [DapperAutoData(4, 5)]
+        [DapperAutoData(5, 5)]
+        public async void PushButton_FloorBelowOrEqual_AddUpCallRequest(
+            int currentFloor,
+            int desiredFloor,
+            [Frozen] Mock<IElevatorService> elevatorService,
+            ElevatorControls elevator)
+        {
+            // arrange
+            elevatorService.Setup(x => x.CurrentFloor).Returns(currentFloor);
+            
+            // act
+            switch (desiredFloor)
+            {
+                case 1:
+                    await elevator.PushButtonNumberAsync(1).ConfigureAwait(false);
+                    break;
+                case 2:
+                    await elevator.PushButtonNumberAsync(2).ConfigureAwait(false);
+                    break;
+                case 3:
+                    await elevator.PushButtonNumberAsync(3).ConfigureAwait(false);
+                    break;
+                case 4:
+                    await elevator.PushButtonNumberAsync(4).ConfigureAwait(false);
+                    break;
+                case 5:
+                    await elevator.PushButtonNumberAsync(5).ConfigureAwait(false);
+                    break;
+            }
+
+            // assert
+            elevatorService.Verify(x => x.UpCallRequestAsync(desiredFloor), Times.Once);
         }
     }
 }

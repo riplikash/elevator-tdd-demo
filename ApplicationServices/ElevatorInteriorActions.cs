@@ -18,43 +18,19 @@ namespace ApplicationServices
             return base.CheckElevatorPositionAsync();
         }
 
-        public async Task PushButton1()
-        {
-            await PushButtonNumber(1).ConfigureAwait(false);
-        }
-
-        public async Task PushButton2()
-        {
-            await PushButtonNumber(2).ConfigureAwait(false);
-        }
-
-        public async Task PushButton3()
-        {
-            await PushButtonNumber(3).ConfigureAwait(false);
-        }
-
-        public async Task PushButton4()
-        {
-            await PushButtonNumber(4).ConfigureAwait(false);
-        }
-
-        public async Task PushButton5()
-        {
-            await PushButtonNumber(5).ConfigureAwait(false);
-        }
-
-        private async Task PushButtonNumber(int floor)
+       
+        public async Task PushButtonNumberAsync(int desiredFloor)
         {
             if (inElevator == false) throw new Exception("You are not in an elevator");
-            if (ElevatorService.CurrentFloor > floor)
+            if (ElevatorService.CurrentFloor > desiredFloor)
             {
-                await ElevatorService.DownCallRequestAsync(floor).ConfigureAwait(false);
+                await ElevatorService.DownCallRequestAsync(desiredFloor).ConfigureAwait(false);
             }
             else
             {
-                await ElevatorService.UpCallRequestAsync(floor).ConfigureAwait(false);
+                await ElevatorService.UpCallRequestAsync(desiredFloor).ConfigureAwait(false);
             }
-            callPanel = ElevatorService.GetCallPanelForFloor(floor);
+            callPanel = ElevatorService.GetCallPanelForFloor(desiredFloor);
         }
     }
 }

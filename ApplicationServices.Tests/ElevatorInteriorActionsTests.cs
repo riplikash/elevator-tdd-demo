@@ -47,7 +47,7 @@ namespace ApplicationServices.Tests
             await GetInElevator(originalCallPanel, elevator).ConfigureAwait(false);
 
             // act
-            await elevator.PushButton1().ConfigureAwait(false);
+            await elevator.PushButtonNumberAsync(1).ConfigureAwait(false);
             await elevator.EnterDoorWhenItOpensAsync().ConfigureAwait(false);
 
             // assert
@@ -82,16 +82,16 @@ namespace ApplicationServices.Tests
             switch (desiredFloor)
             {
                 case 1:
-                    await elevator.PushButton1().ConfigureAwait(false);
+                    await elevator.PushButtonNumberAsync(1).ConfigureAwait(false);
                     break;
                 case 2:
-                    await elevator.PushButton2().ConfigureAwait(false);
+                    await elevator.PushButtonNumberAsync(2).ConfigureAwait(false);
                     break;
                 case 3:
-                    await elevator.PushButton3().ConfigureAwait(false);
+                    await elevator.PushButtonNumberAsync(3).ConfigureAwait(false);
                     break;
                 case 4:
-                    await elevator.PushButton4().ConfigureAwait(false);
+                    await elevator.PushButtonNumberAsync(4).ConfigureAwait(false);
                     break;
             }
 
@@ -124,19 +124,19 @@ namespace ApplicationServices.Tests
             switch (desiredFloor)
             {
                 case 1:
-                    await elevator.PushButton1().ConfigureAwait(false);
+                    await elevator.PushButtonNumberAsync(1).ConfigureAwait(false);
                     break;
                 case 2:
-                    await elevator.PushButton2().ConfigureAwait(false);
+                    await elevator.PushButtonNumberAsync(2).ConfigureAwait(false);
                     break;
                 case 3:
-                    await elevator.PushButton3().ConfigureAwait(false);
+                    await elevator.PushButtonNumberAsync(3).ConfigureAwait(false);
                     break;
                 case 4:
-                    await elevator.PushButton4().ConfigureAwait(false);
+                    await elevator.PushButtonNumberAsync(4).ConfigureAwait(false);
                     break;
                 case 5:
-                    await elevator.PushButton5().ConfigureAwait(false);
+                    await elevator.PushButtonNumberAsync(5).ConfigureAwait(false);
                     break;
             }
 

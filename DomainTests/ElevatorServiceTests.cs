@@ -175,9 +175,6 @@ namespace DomainTests
             await service.UpCallRequestAsync(5).ConfigureAwait(false);
 
             // Assert
-//            await WaitUntilDoorOpensAsync(floor2).ConfigureAwait(false);
-//            await WaitUntilDoorOpensAsync(floor3).ConfigureAwait(false);
-//            await WaitUntilDoorOpensAsync(floor5).ConfigureAwait(false);
         }
 
         //        UpCall_elevatorIsBelowWithUpCallsAbove_ElevatorStopsHereFirst
