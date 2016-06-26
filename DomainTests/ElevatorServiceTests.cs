@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -8,17 +7,11 @@ using Domain;
 using FluentAssertions;
 using Moq;
 using Xunit;
-using Timer = System.Timers.Timer;
 
 namespace DomainTests
 {
     public class ElevatorServiceTests
     {
-        // TODO: if there are upcalls above me and i hit the up button before it leaves the door should open
-        // inverse for down
-        // if I hit the down button while the direction is up on the current floor the door should NOT open
-        // inverse forf u
-
         [Theory, DapperAutoData]
         public void Constructor_Instantiate_StartsOnFloorOne(List<ICallPanel> floorInterface,
             IElevator elevator, IElevatorControls controls)
