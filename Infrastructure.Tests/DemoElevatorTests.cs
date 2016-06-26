@@ -1,9 +1,7 @@
-﻿using System;
-using Domain;
-using FluentAssertions;
+﻿using FluentAssertions;
 using Xunit;
 
-namespace DomainTests
+namespace Infrastructure.Tests
 {
     public class DemoElevatorTests
     {
