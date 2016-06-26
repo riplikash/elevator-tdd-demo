@@ -92,6 +92,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DapperAutoDataAttribute.cs" />
+    <Compile Include="ElevatorInteriorActionsTests.cs" />
     <Compile Include="PersonActionsTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

@@ -40,11 +40,13 @@ namespace ApplicationServices.Tests
         [DapperAutoData(4)]
         [DapperAutoData(5)]
         public void CheckSurroundings_OnAnyFloor_ReportsOutsideOfElevatorAndCorrectFloor(
+            [Frozen] int floor,
             [Frozen] Mock<ICallPanel> panel,
             [Frozen] Mock<IElevatorService> elevatorService,
             PersonActions personActions)
         {
             // Arrange
+
 
             // Act
             var whereAmI = personActions.CheckSurroundings();
