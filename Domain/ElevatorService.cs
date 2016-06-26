@@ -12,10 +12,12 @@ namespace Domain
     {
         public HashSet<int> UpQueue { get; } = new HashSet<int>();
         public HashSet<int> DownQueue { get; } = new HashSet<int>();
-        private readonly List<ICallPanel> exteriorCallPanels;
+
+        public List<ICallPanel> ExteriorCallPanels { get; set; }
+
         private DirectionEnum currentDirection = DirectionEnum.Stationary;
         public int CurrentFloor { get; private set; }
-        public int TotalFloors { get;  }
+        public int TotalFloors => ExteriorCallPanels.Count;
 
         private readonly Timer timer = new Timer();
         private readonly ElevatorServiceUtilities elevatorServiceUtilities;
@@ -26,8 +28,16 @@ namespace Domain
         public ElevatorService(List<ICallPanel> exteriorCallPanels, IElevator elevator, IElevatorControls controls)
         {
             CurrentFloor = 1;
-            TotalFloors = exteriorCallPanels.Count;
-            this.exteriorCallPanels = exteriorCallPanels;
+            this.ExteriorCallPanels = exteriorCallPanels;
+            this.elevator = elevator;
+            this.controls = controls;
+            SetupTimer();
+            elevatorServiceUtilities = new ElevatorServiceUtilities(this);
+        }
+
+        public ElevatorService(IElevator elevator, IElevatorControls controls)
+        {
+            CurrentFloor = 1;
             this.elevator = elevator;
             this.controls = controls;
             SetupTimer();
@@ -126,7 +136,7 @@ namespace Domain
 
         private async Task UpdateFloorDisplays()
         {
-            foreach (var floorInterface in exteriorCallPanels)
+            foreach (var floorInterface in ExteriorCallPanels)
             {
                 await floorInterface.FloorChangeEventHandlerAsync(CurrentFloor).ConfigureAwait(false);
             }
@@ -170,7 +180,7 @@ namespace Domain
 
         public ICallPanel GetCallPanelForFloor(int i)
         {
-            return exteriorCallPanels[i - 1];
+            return ExteriorCallPanels[i - 1];
         }
 
         public Task StopAsync()
