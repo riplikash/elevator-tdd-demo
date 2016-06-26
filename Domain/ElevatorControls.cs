@@ -14,16 +14,11 @@ namespace Domain
             TotalFloors = totalFloors;
         }
         // TODO: make more generic interface
-        public async Task PushFloor1ButtonAsync()
+        public async Task PushFloorButtonAsync(int floor)
         {
-            if (currentFloor != 1)
-                await elevatorService.DownCallRequestAsync(1).ConfigureAwait(false);
+            await SubmitCallForCurrentFloor(floor).ConfigureAwait(false);
         }
-
-        public async Task PushFloor2ButtonAsync()
-        {
-            await SubmitCallForCurrentFloor(2).ConfigureAwait(false);
-        }
+        
 
         private async Task SubmitCallForCurrentFloor(int buttonPushed)
         {
@@ -31,20 +26,7 @@ namespace Domain
             else if (currentFloor < buttonPushed) await elevatorService.UpCallRequestAsync(buttonPushed).ConfigureAwait(false);
         }
 
-        public async Task PushFloor3ButtonAsync()
-        {
-            await SubmitCallForCurrentFloor(3).ConfigureAwait(false);
-        }
-
-        public async Task PushFloor4ButtonAsync()
-        {
-            await SubmitCallForCurrentFloor(4).ConfigureAwait(false);
-        }
-
-        public async Task PushFloor5ButtonAsync()
-        {
-            await SubmitCallForCurrentFloor(5).ConfigureAwait(false);
-        }
+       
 
         public Task FloorUpdateEventHandlerAsync(int newFloor)
         {

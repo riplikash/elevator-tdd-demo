@@ -24,7 +24,7 @@ namespace DomainTests
             await controls.FloorUpdateEventHandlerAsync(5).ConfigureAwait(false);
 
             // Act
-            await controls.PushFloor1ButtonAsync().ConfigureAwait(false);
+            await controls.PushFloorButtonAsync(1).ConfigureAwait(false);
 
             // Assert
             elevatorService.Verify(x => x.DownCallRequestAsync(1), Times.Once);
@@ -41,7 +41,7 @@ namespace DomainTests
             await controls.FloorUpdateEventHandlerAsync(1).ConfigureAwait(false);
 
             // Act
-            await controls.PushFloor1ButtonAsync().ConfigureAwait(false);
+            await controls.PushFloorButtonAsync(1).ConfigureAwait(false);
 
             // Assert
             elevatorService.Verify(x => x.UpCallRequestAsync(3), Times.Never);
@@ -62,7 +62,7 @@ namespace DomainTests
             await controls.FloorUpdateEventHandlerAsync(1).ConfigureAwait(false);
 
             // Act
-            await controls.PushFloor2ButtonAsync().ConfigureAwait(false);
+            await controls.PushFloorButtonAsync(2).ConfigureAwait(false);
 
             // Assert
             elevatorService.Verify(x => x.UpCallRequestAsync(2), Times.Once);
@@ -79,7 +79,7 @@ namespace DomainTests
             await controls.FloorUpdateEventHandlerAsync(5).ConfigureAwait(false);
 
             // Act
-            await controls.PushFloor2ButtonAsync().ConfigureAwait(false);
+            await controls.PushFloorButtonAsync(2).ConfigureAwait(false);
 
             // Assert
             elevatorService.Verify(x => x.DownCallRequestAsync(2), Times.Once);
@@ -96,7 +96,7 @@ namespace DomainTests
             await controls.FloorUpdateEventHandlerAsync(2).ConfigureAwait(false);
 
             // Act
-            await controls.PushFloor2ButtonAsync().ConfigureAwait(false);
+            await controls.PushFloorButtonAsync(2).ConfigureAwait(false);
 
             // Assert
             elevatorService.Verify(x => x.UpCallRequestAsync(2), Times.Never);
@@ -118,7 +118,7 @@ namespace DomainTests
             await controls.FloorUpdateEventHandlerAsync(1).ConfigureAwait(false);
 
             // Act
-            await controls.PushFloor3ButtonAsync().ConfigureAwait(false);
+            await controls.PushFloorButtonAsync(3).ConfigureAwait(false);
 
             // Assert
             elevatorService.Verify(x => x.UpCallRequestAsync(3), Times.Once);
@@ -135,7 +135,7 @@ namespace DomainTests
             await controls.FloorUpdateEventHandlerAsync(5).ConfigureAwait(false);
 
             // Act
-            await controls.PushFloor3ButtonAsync().ConfigureAwait(false);
+            await controls.PushFloorButtonAsync(3).ConfigureAwait(false);
 
             // Assert
             elevatorService.Verify(x => x.DownCallRequestAsync(3), Times.Once);
@@ -152,7 +152,7 @@ namespace DomainTests
             await controls.FloorUpdateEventHandlerAsync(3).ConfigureAwait(false);
 
             // Act
-            await controls.PushFloor3ButtonAsync().ConfigureAwait(false);
+            await controls.PushFloorButtonAsync(3).ConfigureAwait(false);
 
             // Assert
             elevatorService.Verify(x => x.UpCallRequestAsync(3), Times.Never);
