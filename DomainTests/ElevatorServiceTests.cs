@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Alexprof.AutoMoq;
@@ -9,6 +8,7 @@ using Domain;
 using FluentAssertions;
 using Moq;
 using Xunit;
+using Timer = System.Timers.Timer;
 
 namespace DomainTests
 {
@@ -32,16 +32,21 @@ namespace DomainTests
 
         [Theory, DapperAutoData]
         public async void ArrivesAtFloor_DoorOpenIsCalled(
-            IElevatorService service)
+            Mock<ICallPanel> panel1,
+            Mock<ICallPanel> panel2,
+            IElevator elevator,
+            IElevatorControls controls)
         {
             // Arrange
-            var floorOneInterface = service.GetExternalCallInterfaceForFloor(1);
+            ElevatorService service = new ElevatorService(2, new List<ICallPanel> {panel1.Object, panel2.Object}, elevator, controls);
+            await service.StartAsync().ConfigureAwait(false);
 
             // Act
             await service.UpCallRequestAsync(2).ConfigureAwait(false);
 
             // Assert
-            AssertDoorOpensWithinTimePeriod(floorOneInterface, 3000).Should().BeTrue();
+            Thread.Sleep(2000);
+            panel2.Verify(x => x.DoorOpenEventHandlerAsync(), Times.Once);
         }
 
         [Theory, DapperAutoData]
@@ -62,42 +67,40 @@ namespace DomainTests
         [Theory, DapperAutoData]
         public async void FloorChange_FloorChangeEventHandlerCalledOnEachFloor(
             [Frozen] Mock<IElevator> elevator,
-            IElevatorService service)
+            ElevatorService service)
         {
             // Arrange
-            var floorFiveInterface = service.GetExternalCallInterfaceForFloor(5);
+            int moveUpCount = 0;
+            elevator.Setup(x => x.MoveUpAsync()).Returns(() =>
+            {
+                moveUpCount++;
+                return Task.FromResult(0);
+            });
+            await service.StartAsync().ConfigureAwait(false);
 
             // Act
-            await service.UpCallRequestAsync(5).ConfigureAwait(false);
-            await WaitUntilDoorOpensAsync(floorFiveInterface).ConfigureAwait(false);
+            await service.UpCallRequestAsync(service.TotalFloors).ConfigureAwait(false);
 
             // Assert
+            // TODO: still a bit hacky. Need to create a proper way to wait on floor movement
+            while (moveUpCount != service.TotalFloors - 1)
+            {
+                Thread.Sleep(100);
+            }
             elevator.Verify(x => x.MoveUpAsync(), Times.Exactly(service.TotalFloors - 1));
         }
 
-        [Theory, DapperAutoData]
-        private Task WaitUntilDoorOpensAsync(ICallPanel callPanel)
-        {
-            var watch = System.Diagnostics.Stopwatch.StartNew();
-            while (watch.ElapsedMilliseconds < 5000) // TODO: A bit of a hack. Think of a more elegant solution
-            {
-                if (callPanel.IsDoorOpen)
-                {
-                    return Task.FromResult(0);
-                }
-            }
-            watch.Stop();
-            throw new TimeoutException("Elevator never arrived");
-        }
 
         [Theory, DapperAutoData]
         public void GetInterfaceForFloor_FloorCallInterfacesHaveBeenInjected_CorrectInterfaceIsReturned(
-            [Frozen] List<ICallPanel> seedExternalCallInterfaces,
-            IElevatorService service)
+            List<ICallPanel> seedExternalCallInterfaces,
+            IElevator elevator,
+            IElevatorControls controls)
         {
+            var service = new ElevatorService(seedExternalCallInterfaces.Count, seedExternalCallInterfaces, elevator, controls);
             for (int i = 0; i < seedExternalCallInterfaces.Count; i++)
             {
-                service.GetExternalCallInterfaceForFloor(i).Should().Be(seedExternalCallInterfaces[i]);
+                service.GetCallPanelForFloor(i + 1).Should().Be(seedExternalCallInterfaces[i]);
             }
         }
 
@@ -107,17 +110,25 @@ namespace DomainTests
 
         [Theory, DapperAutoData]
         public async void UpCall_elevatorIsBelowWithNoOtherCalls_ElevatorComesOnlyToThisFloor(
-            [Frozen] List<Mock<ICallPanel>> callInterfaces,
-            [Frozen] Mock<IElevator> elevator,
-            IElevatorService service)
+            List<Mock<ICallPanel>> callInterfaces,
+            IElevator elevator,
+            IElevatorControls controls)
         {
             // Arrange
+            List<ICallPanel> callPanels = callInterfaces.Select(x => x.Object).ToList(); 
+            var service = new ElevatorService(callInterfaces.Count, callPanels, elevator, controls);
+            await service.StartAsync().ConfigureAwait(false);
 
             // Act
             await service.UpCallRequestAsync(5).ConfigureAwait(false);
-            await WaitUntilDoorOpensAsync(service.GetExternalCallInterfaceForFloor(5)).ConfigureAwait(false);
+            
 
             // Assert
+            while (service.CurrentFloor != service.TotalFloors)
+            {
+                Thread.Sleep(100);
+            }
+            Thread.Sleep(3000);
             callInterfaces[1].Verify(x => x.DoorOpenEventHandlerAsync(), Times.Never);
             callInterfaces[2].Verify(x => x.DoorOpenEventHandlerAsync(), Times.Never);
             callInterfaces[3].Verify(x => x.DoorOpenEventHandlerAsync(), Times.Never);
@@ -127,31 +138,36 @@ namespace DomainTests
         [Theory, DapperAutoData]
         public async void UpCall_ElevatorIsBelowWithNoOtherCalls_ElevatorIsMovedUpCorrectAmountOfTimes(
             [Frozen] Mock<IElevator> elevator,
-            IElevatorService service
+            ElevatorService service
             )
         {
             // Arrange
+            await service.StartAsync().ConfigureAwait(false);
 
             // Act
-            await service.UpCallRequestAsync(5).ConfigureAwait(false);
-            await WaitUntilDoorOpensAsync(service.GetExternalCallInterfaceForFloor(5)).ConfigureAwait(false);
+            await service.UpCallRequestAsync(service.TotalFloors).ConfigureAwait(false);
 
             // Assert
+            while (service.CurrentFloor != service.TotalFloors)
+            {
+                Thread.Sleep(100);
+            }
+            Thread.Sleep(3000);
             elevator.Verify(x => x.MoveUpAsync(), Times.Exactly(4));
         }
 
         [Theory, DapperAutoData]
         public async void UpCall_ElevatorIsBelowWithUpCallsBelow_ElevatorStopsAtFloorsInOrder(
             [Frozen] Mock<IElevator> elevator,
-            IElevatorService service)
+            ElevatorService service)
         {
             // Arrange
             await service.StopAsync().ConfigureAwait(false);
             await service.UpCallRequestAsync(2).ConfigureAwait(false);
             await service.UpCallRequestAsync(3).ConfigureAwait(false);
-            var floor2 = service.GetExternalCallInterfaceForFloor(2);
-            var floor3 = service.GetExternalCallInterfaceForFloor(3);
-            var floor5 = service.GetExternalCallInterfaceForFloor(5);
+            var floor2 = service.GetCallPanelForFloor(2);
+            var floor3 = service.GetCallPanelForFloor(3);
+            var floor5 = service.GetCallPanelForFloor(5);
             elevator.Setup(x => x.MoveUpAsync()).Callback(() => Thread.Sleep(1000));
             await service.StartAsync().ConfigureAwait(false);
 
@@ -159,9 +175,9 @@ namespace DomainTests
             await service.UpCallRequestAsync(5).ConfigureAwait(false);
 
             // Assert
-            await WaitUntilDoorOpensAsync(floor2).ConfigureAwait(false);
-            await WaitUntilDoorOpensAsync(floor3).ConfigureAwait(false);
-            await WaitUntilDoorOpensAsync(floor5).ConfigureAwait(false);
+//            await WaitUntilDoorOpensAsync(floor2).ConfigureAwait(false);
+//            await WaitUntilDoorOpensAsync(floor3).ConfigureAwait(false);
+//            await WaitUntilDoorOpensAsync(floor5).ConfigureAwait(false);
         }
 
         //        UpCall_elevatorIsBelowWithUpCallsAbove_ElevatorStopsHereFirst
@@ -177,5 +193,7 @@ namespace DomainTests
         // See above due to time
 
         #endregion
+
+
     }
 }

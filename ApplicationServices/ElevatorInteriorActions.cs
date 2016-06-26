@@ -54,7 +54,7 @@ namespace ApplicationServices
             {
                 await ElevatorService.UpCallRequestAsync(floor).ConfigureAwait(false);
             }
-            callPanel = ElevatorService.GetExternalCallInterfaceForFloor(floor);
+            callPanel = ElevatorService.GetCallPanelForFloor(floor);
         }
     }
 }

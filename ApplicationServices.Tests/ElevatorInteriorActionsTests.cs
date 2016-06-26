@@ -42,7 +42,7 @@ namespace ApplicationServices.Tests
             ElevatorInteriorActions elevator)
         {
             // arrange
-            elevatorService.Setup(x => x.GetExternalCallInterfaceForFloor(It.IsAny<int>())).Returns(newPanel.Object);
+            elevatorService.Setup(x => x.GetCallPanelForFloor(It.IsAny<int>())).Returns(newPanel.Object);
             newPanel.Setup(x => x.IsDoorOpen).Returns(true);
             await GetInElevator(originalCallPanel, elevator).ConfigureAwait(false);
 

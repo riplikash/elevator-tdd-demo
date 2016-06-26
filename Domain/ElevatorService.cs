@@ -22,7 +22,7 @@ namespace Domain
         private readonly IElevator elevator;
         private readonly IElevatorControls controls;
 
-        // TODO: move all utilities into single class and make them public so I can test them properlly.
+        // TODO: total floors can be inferred from ICallPanel list
         public ElevatorService(int totalFloors, List<ICallPanel> externalCallInterfaces, IElevator elevator, IElevatorControls controls)
         {
             CurrentFloor = 1;
@@ -102,10 +102,13 @@ namespace Domain
                 while (UpQueue.Contains(CurrentFloor)) // allows user(s) to re-open door if they hit the button again before door operation completes
                 {
                     UpQueue.Remove(CurrentFloor);
-                    await GetExternalCallInterfaceForFloor(CurrentFloor).DoorOpenEventHandlerAsync().ConfigureAwait(false);
-                    Thread.Sleep(3000); // TODO: this is a magic value. Should be set in configuration somewhere
-                    await GetExternalCallInterfaceForFloor(CurrentFloor).DoorCloseEventHandlerAsync().ConfigureAwait(false);
-                    
+                    Console.WriteLine($"Opening door on level {CurrentFloor}");
+                    var callPanel = GetCallPanelForFloor(CurrentFloor);
+                    await callPanel.DoorOpenEventHandlerAsync().ConfigureAwait(false);
+//                    Thread.Sleep(3000); // TODO: Get this configurable
+                    await callPanel.DoorCloseEventHandlerAsync().ConfigureAwait(false);
+                    Console.WriteLine($"Closing door on level {CurrentFloor}");
+
                 }
 
             } else if (currentDirection.Equals(DirectionEnum.Down) && DownQueue.Contains(CurrentFloor))
@@ -113,9 +116,11 @@ namespace Domain
                 while (DownQueue.Contains(CurrentFloor))
                 {
                     DownQueue.Remove(CurrentFloor);
-                    await GetExternalCallInterfaceForFloor(CurrentFloor).DoorOpenEventHandlerAsync().ConfigureAwait(false);
+                    Console.WriteLine($"Opening door on level {CurrentFloor}");
+                    await GetCallPanelForFloor(CurrentFloor).DoorOpenEventHandlerAsync().ConfigureAwait(false);
+                    Console.WriteLine($"Closing door on level {CurrentFloor}");
                     Thread.Sleep(3000); // TODO: this is a magic value. Should be set in configuration somewhere
-                    await GetExternalCallInterfaceForFloor(CurrentFloor).DoorCloseEventHandlerAsync().ConfigureAwait(false);
+                    await GetCallPanelForFloor(CurrentFloor).DoorCloseEventHandlerAsync().ConfigureAwait(false);
                 }
             }
         }
@@ -130,16 +135,20 @@ namespace Domain
 
         private async Task PerformNecessaryMovement()
         {
+            // TODO: Get proper logging in instead of console write lines
             switch (currentDirection)
             {
                 case DirectionEnum.Stationary:
                     return;
                 case DirectionEnum.Up:
+                    Console.WriteLine($"Moving up from floor {CurrentFloor}");
                     await elevator.MoveUpAsync().ConfigureAwait(false);
                     CurrentFloor++;
+                    Console.WriteLine($"Crrived at {CurrentFloor}");
                     await UpdateFloorDisplays().ConfigureAwait(false);
                     break;
                 default:
+                    Console.WriteLine($"Moving from floor {CurrentFloor} to {CurrentFloor - 1}");
                     await elevator.MoveDownAsync().ConfigureAwait(false);
                     CurrentFloor--;
                     await UpdateFloorDisplays().ConfigureAwait(false);
@@ -160,7 +169,7 @@ namespace Domain
             return Task.FromResult(0);
         }
 
-        public ICallPanel GetExternalCallInterfaceForFloor(int i)
+        public ICallPanel GetCallPanelForFloor(int i)
         {
             return externalCallInterfaces[i - 1];
         }

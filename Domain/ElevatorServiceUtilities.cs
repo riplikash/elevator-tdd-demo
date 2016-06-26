@@ -14,7 +14,7 @@ namespace Domain
         public DirectionEnum SelectMostAppropriateDirectionBasedOnHeuristic()
         {
             DirectionEnum rtValue = GetClosestDirectionWhereCallAndDirectionAreSame();
-            if (rtValue != DirectionEnum.Stationary)
+            if (rtValue == DirectionEnum.Stationary)
                 rtValue = GetFurthestDirectionWhereCallAndDirectionAreDifferent();
             return rtValue;
         }
@@ -156,5 +156,7 @@ namespace Domain
             }
             return false;
         }
+
+
     }
 }
