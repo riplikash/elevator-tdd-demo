@@ -11,7 +11,7 @@ namespace Domain
     {
         public HashSet<int> UpQueue { get; } = new HashSet<int>();
         public HashSet<int> DownQueue { get; } = new HashSet<int>();
-        private readonly List<IExternalCallInterface> externalCallInterfaces;
+        private readonly List<ICallPanel> externalCallInterfaces;
         private DirectionEnum currentDirection = DirectionEnum.Stationary;
         public int CurrentFloor { get; private set; }
         public int TotalFloors { get;  }
@@ -20,16 +20,16 @@ namespace Domain
         private readonly ElevatorServiceUtilities elevatorServiceUtilities;
         private volatile bool requestStop;
         private readonly IElevator elevator;
-        private readonly IElevatorInteriorInterface interiorInterface;
+        private readonly IElevatorControls controls;
 
         // TODO: move all utilities into single class and make them public so I can test them properlly.
-        public ElevatorService(int totalFloors, List<IExternalCallInterface> externalCallInterfaces, IElevator elevator, IElevatorInteriorInterface interiorInterface)
+        public ElevatorService(int totalFloors, List<ICallPanel> externalCallInterfaces, IElevator elevator, IElevatorControls controls)
         {
             CurrentFloor = 1;
             TotalFloors = totalFloors;
             this.externalCallInterfaces = externalCallInterfaces;
             this.elevator = elevator;
-            this.interiorInterface = interiorInterface;
+            this.controls = controls;
             SetupTimer();
             elevatorServiceUtilities = new ElevatorServiceUtilities(this);
             // TODO: need better way to get floor interfaces while still being able to mock them
@@ -160,7 +160,7 @@ namespace Domain
             return Task.FromResult(0);
         }
 
-        public IExternalCallInterface GetExternalCallInterfaceForFloor(int i)
+        public ICallPanel GetExternalCallInterfaceForFloor(int i)
         {
             return externalCallInterfaces[i - 1];
         }

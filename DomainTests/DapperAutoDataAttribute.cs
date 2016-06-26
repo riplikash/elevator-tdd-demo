@@ -33,16 +33,16 @@ namespace DomainTests
                     fixture.Customize(new MultipleCustomization())
                         .Customize(new AutoConfiguredMoqCustomization());
                     fixture.RepeatCount = 5;
-                    fixture.Register(() => new ElevatorService(5, fixture.Create<List<IExternalCallInterface>>(), fixture.Create<IElevator>(), fixture.Create<IElevatorInteriorInterface>()));
-                    //            fixture.Register(() => new List<ExternalCallInterface>
+                    fixture.Register(() => new ElevatorService(5, fixture.Create<List<ICallPanel>>(), fixture.Create<IElevator>(), fixture.Create<IElevatorControls>()));
+                    //            fixture.Register(() => new List<callPanel>
                     //            {
-                    //                new ExternalCallInterface(fixture.Create<IElevatorService>(), 1, 5),
-                    //                new ExternalCallInterface(fixture.Create<IElevatorService>(), 2, 5),
-                    //                new ExternalCallInterface(fixture.Create<IElevatorService>(), 3, 5),
-                    //                new ExternalCallInterface(fixture.Create<IElevatorService>(), 4, 5),
-                    //                new ExternalCallInterface(fixture.Create<IElevatorService>(), 5, 5)
+                    //                new callPanel(fixture.Create<IElevatorService>(), 1, 5),
+                    //                new callPanel(fixture.Create<IElevatorService>(), 2, 5),
+                    //                new callPanel(fixture.Create<IElevatorService>(), 3, 5),
+                    //                new callPanel(fixture.Create<IElevatorService>(), 4, 5),
+                    //                new callPanel(fixture.Create<IElevatorService>(), 5, 5)
                     //            });
-                    fixture.Register(() => new ExternalCallInterface(fixture.Create<IElevatorService>(), new Random().Next(1, 5), 5));
+                    fixture.Register(() => new CallPanel(fixture.Create<IElevatorService>(), new Random().Next(1, 5), 5));
                 }
             }
         }

@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace Domain
 {
-    public class ExternalCallInterface : IExternalCallInterface
+    public class CallPanel : ICallPanel
     {
         private readonly IElevatorService _elevatorService;
         public string ElevatorFloorDisplay { get; private set; }
-        public ExternalCallInterface(IElevatorService elevatorService, int floor, int totalFloors)
+        public CallPanel(IElevatorService elevatorService, int floor, int totalFloors)
         {
             _elevatorService = elevatorService;
             Floor = floor;

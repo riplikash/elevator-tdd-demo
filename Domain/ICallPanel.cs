@@ -2,7 +2,7 @@
 
 namespace Domain
 {
-    public interface IExternalCallInterface
+    public interface ICallPanel
     {
         string ElevatorFloorDisplay { get; }
         int Floor { get; }

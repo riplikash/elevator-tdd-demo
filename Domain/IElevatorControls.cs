@@ -2,7 +2,7 @@
 
 namespace Domain
 {
-    public interface IElevatorInteriorInterface
+    public interface IElevatorControls
     {
         Task PushFloor1ButtonAsync();
         Task PushFloor2ButtonAsync();

@@ -6,79 +6,79 @@ using Xunit;
 
 namespace DomainTests
 {
-    public class ExternalCallInterfaceTests
+    public class CallPanelTests
     {
         [Theory]
         [DapperAutoData]
         public async void UpCallButtonPress_ButtonIsPressed_CurrentFloorAddedToUpcallQueue(
             [Frozen] Mock<IElevatorService> elevatorService,
-            ExternalCallInterface callInterface)
+            CallPanel callPanel)
         {
             // Arrange
 
             // Act
-            await callInterface.PushUpCallAsync().ConfigureAwait(false);
+            await callPanel.PushUpCallAsync().ConfigureAwait(false);
 
             // Assert
-            elevatorService.Verify(x => x.UpCallRequestAsync(callInterface.Floor), Times.Once);
+            elevatorService.Verify(x => x.UpCallRequestAsync(callPanel.Floor), Times.Once);
         }
 
         [Theory]
         [DapperAutoData]
         public async void DownCallButtonPress_ButtonIsPressed_CurrentFloorAddedToDowncallQueue(
             [Frozen] Mock<IElevatorService> elevatorService,
-            ExternalCallInterface callInterface)
+            CallPanel callPanel)
         {
             // Act
-            await callInterface.PushDownCallAsync().ConfigureAwait(false);
+            await callPanel.PushDownCallAsync().ConfigureAwait(false);
 
             // Assert
-            elevatorService.Verify(x => x.DownCallRequestAsync(callInterface.Floor), Times.Once);
+            elevatorService.Verify(x => x.DownCallRequestAsync(callPanel.Floor), Times.Once);
         }
 
         [Theory]
         [DapperAutoData]
         public async void FloorChangeEventHandler_EventHandlerEvoked_FloorDisplayUpdates(
             [Frozen] int floor,
-            ExternalCallInterface callInterface)
+            CallPanel callPanel)
         {
             // Arrange
 
             // Act
-            await callInterface.FloorChangeEventHandlerAsync(floor).ConfigureAwait(false);
+            await callPanel.FloorChangeEventHandlerAsync(floor).ConfigureAwait(false);
 
             // Assert
-            callInterface.ElevatorFloorDisplay.Should().Be(floor.ToString());
+            callPanel.ElevatorFloorDisplay.Should().Be(floor.ToString());
         }
 
         [Theory]
         [DapperAutoData]
         public async void DoorOpenEventHandler_EventHandlerEvoked_DoorIsOpened(
-            ExternalCallInterface callInterface)
+            CallPanel callPanel)
         {
             // Arrange
-            await callInterface.DoorCloseEventHandlerAsync().ConfigureAwait(false);
+            await callPanel.DoorCloseEventHandlerAsync().ConfigureAwait(false);
 
             // Act
-            await callInterface.DoorOpenEventHandlerAsync().ConfigureAwait(false);
+            await callPanel.DoorOpenEventHandlerAsync().ConfigureAwait(false);
 
             // Assert
-            callInterface.IsDoorOpen.Should().BeTrue();
+            callPanel.IsDoorOpen.Should().BeTrue();
         }
 
         [Theory]
         [DapperAutoData]
         public async void DoorClosedEventHandler_EventHandlerEvoked_DoorIsClosed(
-            ExternalCallInterface callInterface)
+            CallPanel callPanel)
         {
             // Arrange
-            await callInterface.DoorOpenEventHandlerAsync().ConfigureAwait(false);
+            await callPanel.DoorOpenEventHandlerAsync().ConfigureAwait(false);
 
             // Act
-            await callInterface.DoorCloseEventHandlerAsync().ConfigureAwait(false);
+            await callPanel.DoorCloseEventHandlerAsync().ConfigureAwait(false);
 
             // Assert
-            callInterface.IsDoorOpen.Should().BeFalse();
+            callPanel.IsDoorOpen.Should().BeFalse();
         }
 
         [Theory]
@@ -87,7 +87,7 @@ namespace DomainTests
             int totalFloors, int floor)
         {
             // Arrange
-            var callInterface = new ExternalCallInterface(elevatorService, floor, totalFloors);
+            var callInterface = new CallPanel(elevatorService, floor, totalFloors);
 
             // Act
 

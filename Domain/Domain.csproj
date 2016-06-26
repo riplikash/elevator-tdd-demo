@@ -40,14 +40,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ElevatorInteriorInterface.cs" />
+    <Compile Include="ElevatorControls.cs" />
     <Compile Include="ElevatorService.cs" />
     <Compile Include="ElevatorServiceUtilities.cs" />
     <Compile Include="IElevator.cs" />
-    <Compile Include="IElevatorInteriorInterface.cs" />
+    <Compile Include="IElevatorControls.cs" />
     <Compile Include="IElevatorService.cs" />
-    <Compile Include="ExternalCallInterface.cs" />
-    <Compile Include="IExternalCallInterface.cs" />
+    <Compile Include="CallPanel.cs" />
+    <Compile Include="ICallPanel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

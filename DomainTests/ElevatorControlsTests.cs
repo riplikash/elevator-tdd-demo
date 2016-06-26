@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Alexprof.AutoMoq;
 using Domain;
 using FluentAssertions;
@@ -7,7 +8,7 @@ using Xunit;
 
 namespace DomainTests
 {
-    public class ElevatorInteriorInterfaceTests
+    public class ElevatorControlsTests
     {
 
 
@@ -17,13 +18,13 @@ namespace DomainTests
         [Theory, DapperAutoData]
         public async void PushButton1Async_CalledFromFloor5_Floor3AddedToDownQueue(
             [Frozen] Mock<IElevatorService> elevatorService,
-            ElevatorInteriorInterface interiorInterface)
+            ElevatorControls controls)
         {
             // Arrange
-            await interiorInterface.FloorUpdateEventHandlerAsync(5).ConfigureAwait(false);
+            await controls.FloorUpdateEventHandlerAsync(5).ConfigureAwait(false);
 
             // Act
-            await interiorInterface.PushFloor1ButtonAsync().ConfigureAwait(false);
+            await controls.PushFloor1ButtonAsync().ConfigureAwait(false);
 
             // Assert
             elevatorService.Verify(x => x.DownCallRequestAsync(1), Times.Once);
@@ -34,13 +35,13 @@ namespace DomainTests
         [Theory, DapperAutoData]
         public async void PushButton1Async_CalledFromFloor1_NothingHappens(
             [Frozen] Mock<IElevatorService> elevatorService,
-            ElevatorInteriorInterface interiorInterface)
+            ElevatorControls controls)
         {
             // Arrange
-            await interiorInterface.FloorUpdateEventHandlerAsync(1).ConfigureAwait(false);
+            await controls.FloorUpdateEventHandlerAsync(1).ConfigureAwait(false);
 
             // Act
-            await interiorInterface.PushFloor1ButtonAsync().ConfigureAwait(false);
+            await controls.PushFloor1ButtonAsync().ConfigureAwait(false);
 
             // Assert
             elevatorService.Verify(x => x.UpCallRequestAsync(3), Times.Never);
@@ -55,13 +56,13 @@ namespace DomainTests
 
         public async void PushButton2Async_CalledFromFloor1_Floor3AddedToUpQueue(
             [Frozen] Mock<IElevatorService> elevatorService,
-            ElevatorInteriorInterface interiorInterface)
+            ElevatorControls controls)
         {
             // Arrange
-            await interiorInterface.FloorUpdateEventHandlerAsync(1).ConfigureAwait(false);
+            await controls.FloorUpdateEventHandlerAsync(1).ConfigureAwait(false);
 
             // Act
-            await interiorInterface.PushFloor2ButtonAsync().ConfigureAwait(false);
+            await controls.PushFloor2ButtonAsync().ConfigureAwait(false);
 
             // Assert
             elevatorService.Verify(x => x.UpCallRequestAsync(2), Times.Once);
@@ -72,13 +73,13 @@ namespace DomainTests
         [Theory, DapperAutoData]
         public async void PushButton2Async_CalledFromFloor5_Floor3AddedToDownQueue(
             [Frozen] Mock<IElevatorService> elevatorService,
-            ElevatorInteriorInterface interiorInterface)
+            ElevatorControls controls)
         {
             // Arrange
-            await interiorInterface.FloorUpdateEventHandlerAsync(5).ConfigureAwait(false);
+            await controls.FloorUpdateEventHandlerAsync(5).ConfigureAwait(false);
 
             // Act
-            await interiorInterface.PushFloor2ButtonAsync().ConfigureAwait(false);
+            await controls.PushFloor2ButtonAsync().ConfigureAwait(false);
 
             // Assert
             elevatorService.Verify(x => x.DownCallRequestAsync(2), Times.Once);
@@ -89,13 +90,13 @@ namespace DomainTests
         [Theory, DapperAutoData]
         public async void PushButton2Async_CalledFromFloor3_NothingHappens(
             [Frozen] Mock<IElevatorService> elevatorService,
-            ElevatorInteriorInterface interiorInterface)
+            ElevatorControls controls)
         {
             // Arrange
-            await interiorInterface.FloorUpdateEventHandlerAsync(2).ConfigureAwait(false);
+            await controls.FloorUpdateEventHandlerAsync(2).ConfigureAwait(false);
 
             // Act
-            await interiorInterface.PushFloor2ButtonAsync().ConfigureAwait(false);
+            await controls.PushFloor2ButtonAsync().ConfigureAwait(false);
 
             // Assert
             elevatorService.Verify(x => x.UpCallRequestAsync(2), Times.Never);
@@ -111,13 +112,13 @@ namespace DomainTests
 
         public async void PushButton3Async_CalledFromFloor1_Floor3AddedToUpQueue(
             [Frozen] Mock<IElevatorService> elevatorService,
-            ElevatorInteriorInterface interiorInterface)
+            ElevatorControls controls)
         {
             // Arrange
-            await interiorInterface.FloorUpdateEventHandlerAsync(1).ConfigureAwait(false);
+            await controls.FloorUpdateEventHandlerAsync(1).ConfigureAwait(false);
 
             // Act
-            await interiorInterface.PushFloor3ButtonAsync().ConfigureAwait(false);
+            await controls.PushFloor3ButtonAsync().ConfigureAwait(false);
 
             // Assert
             elevatorService.Verify(x => x.UpCallRequestAsync(3), Times.Once);
@@ -128,13 +129,13 @@ namespace DomainTests
         [Theory, DapperAutoData]
         public async void PushButton3Async_CalledFromFloor5_Floor3AddedToDownQueue(
             [Frozen] Mock<IElevatorService> elevatorService,
-            ElevatorInteriorInterface interiorInterface)
+            ElevatorControls controls)
         {
             // Arrange
-            await interiorInterface.FloorUpdateEventHandlerAsync(5).ConfigureAwait(false);
+            await controls.FloorUpdateEventHandlerAsync(5).ConfigureAwait(false);
 
             // Act
-            await interiorInterface.PushFloor3ButtonAsync().ConfigureAwait(false);
+            await controls.PushFloor3ButtonAsync().ConfigureAwait(false);
 
             // Assert
             elevatorService.Verify(x => x.DownCallRequestAsync(3), Times.Once);
@@ -145,13 +146,13 @@ namespace DomainTests
         [Theory, DapperAutoData]
         public async void PushButton3Async_CalledFromFloor3_NothingHappens(
             [Frozen] Mock<IElevatorService> elevatorService,
-            ElevatorInteriorInterface interiorInterface)
+            ElevatorControls controls)
         {
             // Arrange
-            await interiorInterface.FloorUpdateEventHandlerAsync(3).ConfigureAwait(false);
+            await controls.FloorUpdateEventHandlerAsync(3).ConfigureAwait(false);
 
             // Act
-            await interiorInterface.PushFloor3ButtonAsync().ConfigureAwait(false);
+            await controls.PushFloor3ButtonAsync().ConfigureAwait(false);
 
             // Assert
             elevatorService.Verify(x => x.UpCallRequestAsync(3), Times.Never);
@@ -166,16 +167,16 @@ namespace DomainTests
 
         [Theory, DapperAutoData]
         public async void FloorUpdateEventHandlerAsync_MethodCalled_CurrentFloorUpdates(
-            ElevatorInteriorInterface interiorInterface)
+            ElevatorControls controls)
         {
             // Arrange
             int floor = new Random().Next(1, 5);
 
             // Act
-            await interiorInterface.FloorUpdateEventHandlerAsync(floor).ConfigureAwait(false);
+            await controls.FloorUpdateEventHandlerAsync(floor).ConfigureAwait(false);
 
             // Assert
-            interiorInterface.FloorDisplay.Should().Be(floor.ToString());
+            controls.FloorDisplay.Should().Be(floor.ToString());
 
         }
 
@@ -183,26 +184,17 @@ namespace DomainTests
         [Theory]
         [DapperAutoData(0)]
         [DapperAutoData(int.MaxValue)]
-        public async void FloorUpdateEventHandlerAsync_OutOfRange_ThrowsoutOfrangeException(
+        public void FloorUpdateEventHandlerAsync_OutOfRange_ThrowsoutOfrangeException(
             int newFloor,
-            ElevatorInteriorInterface interiorInterface)
+            ElevatorControls controls)
         {
             // Arrange
 
             // Act
-            try
-            {
-                await interiorInterface.FloorUpdateEventHandlerAsync(newFloor).ConfigureAwait(false);
-            }
-            catch (ArgumentOutOfRangeException e)
-            {
-                e.Should().NotBeNull();
-            }
-//            Action act = async () => await interiorInterface.FloorUpdateEventHandlerAsync(newFloor).ConfigureAwait(false);
+            Func<Task> act = async () => await controls.FloorUpdateEventHandlerAsync(newFloor).ConfigureAwait(false);
 
             // Assert
-            // odd that this osn't working
-//            act.ShouldThrow<Exception>();
+            act.ShouldThrow<Exception>();
 
         }
     }

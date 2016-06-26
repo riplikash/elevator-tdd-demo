@@ -43,7 +43,14 @@
     <Compile Include="IElevatorExteriorActions.cs" />
     <Compile Include="IElevatorInteriorActions.cs" />
     <Compile Include="IPersonActions.cs" />
+    <Compile Include="PersonActions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Domain\Domain.csproj">
+      <Project>{DC170DF3-A51F-477D-8528-0A0A0AD7236B}</Project>
+      <Name>Domain</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

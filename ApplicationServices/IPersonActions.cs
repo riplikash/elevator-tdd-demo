@@ -4,8 +4,8 @@ namespace ApplicationServices
 {
     public interface IPersonActions
     {
-        Task<string> CheckElevatorPositionAsync();
-        Task<string> CheckSurroundings();
-        Task<string> LookAtDoorAsync();
+        string CheckElevatorPositionAsync();
+        string CheckSurroundings();
+        Task EnterDoorWhenItOpensAsync();
     }
 }

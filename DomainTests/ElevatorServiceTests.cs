@@ -20,11 +20,11 @@ namespace DomainTests
         // inverse forf u
 
         [Theory, DapperAutoData]
-        public void Constructor_Instantiate_StartsOnFloorOne(List<IExternalCallInterface> floorInterface,
-            IElevator elevator, IElevatorInteriorInterface interiorInterface)
+        public void Constructor_Instantiate_StartsOnFloorOne(List<ICallPanel> floorInterface,
+            IElevator elevator, IElevatorControls controls)
         {
             // Act
-            var service = new ElevatorService(5, floorInterface, elevator, interiorInterface);
+            var service = new ElevatorService(5, floorInterface, elevator, controls);
 
             // Assert
             service.CurrentFloor.Should().Be(1);
@@ -33,7 +33,7 @@ namespace DomainTests
 //        public void DepartsFloor_DoorCloseCalled(ElevatorService service)
 //        {
 //            // Arrange
-//            var floorOneInterface = service.GetExternalCallInterfaceForFloor(1);
+//            var floorOnePanel = service.GetExternalCallInterfaceForFloor(1);
 //            // Act
 //
 //
@@ -55,12 +55,12 @@ namespace DomainTests
         }
 
         [Theory, DapperAutoData]
-        private bool AssertDoorOpensWithinTimePeriod(IExternalCallInterface floorOneInterface, int milliseconds)
+        private bool AssertDoorOpensWithinTimePeriod(ICallPanel floorOnePanel, int milliseconds)
         {
             var watch = System.Diagnostics.Stopwatch.StartNew();
             while (watch.ElapsedMilliseconds < milliseconds) // TODO: A bit of a hack. Think of a more elegant solution
             {
-                if (floorOneInterface.IsDoorOpen)
+                if (floorOnePanel.IsDoorOpen)
                 {
                     return true;
                 }
@@ -86,12 +86,12 @@ namespace DomainTests
         }
 
         [Theory, DapperAutoData]
-        private Task WaitUntilDoorOpensAsync(IExternalCallInterface externalCallInterface)
+        private Task WaitUntilDoorOpensAsync(ICallPanel callPanel)
         {
             var watch = System.Diagnostics.Stopwatch.StartNew();
             while (watch.ElapsedMilliseconds < 5000) // TODO: A bit of a hack. Think of a more elegant solution
             {
-                if (externalCallInterface.IsDoorOpen)
+                if (callPanel.IsDoorOpen)
                 {
                     return Task.FromResult(0);
                 }
@@ -102,7 +102,7 @@ namespace DomainTests
 
         [Theory, DapperAutoData]
         public void GetInterfaceForFloor_FloorCallInterfacesHaveBeenInjected_CorrectInterfaceIsReturned(
-            [Frozen] List<IExternalCallInterface> seedExternalCallInterfaces,
+            [Frozen] List<ICallPanel> seedExternalCallInterfaces,
             IElevatorService service)
         {
             for (int i = 0; i < seedExternalCallInterfaces.Count; i++)
@@ -117,7 +117,7 @@ namespace DomainTests
 
         [Theory, DapperAutoData]
         public async void UpCall_elevatorIsBelowWithNoOtherCalls_ElevatorComesOnlyToThisFloor(
-            [Frozen] List<Mock<IExternalCallInterface>> callInterfaces,
+            [Frozen] List<Mock<ICallPanel>> callInterfaces,
             [Frozen] Mock<IElevator> elevator,
             IElevatorService service)
         {

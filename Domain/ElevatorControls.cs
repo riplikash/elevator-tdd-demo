@@ -3,11 +3,11 @@ using System.Threading.Tasks;
 
 namespace Domain
 {
-    public class ElevatorInteriorInterface : IElevatorInteriorInterface
+    public class ElevatorControls : IElevatorControls
     {
         private readonly IElevatorService elevatorService;
         private int currentFloor;
-        public ElevatorInteriorInterface(int currentFloor, IElevatorService elevatorService, int totalFloors)
+        public ElevatorControls(int currentFloor, IElevatorService elevatorService, int totalFloors)
         {
             this.currentFloor = currentFloor;
             this.elevatorService = elevatorService;
