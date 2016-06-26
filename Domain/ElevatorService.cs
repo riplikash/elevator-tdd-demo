@@ -7,6 +7,7 @@ using Timer = System.Timers.Timer;
 
 namespace Domain
 {
+    // TODO: get timer stuff into infrastructure
     public class ElevatorService : IElevatorService
     {
         public HashSet<int> UpQueue { get; } = new HashSet<int>();
