@@ -30,8 +30,8 @@ namespace DomainTests
             // arrange
             elevatorService.Setup(x => x.CurrentFloor).Returns(currentFloor);
             elevatorService.Setup(x => x.TotalFloors).Returns(5);
-            elevatorService.Setup(x => x.UpQueue).Returns(new HashSet<int> {upCall});
-            elevatorService.Setup(x => x.DownQueue).Returns(new HashSet<int> {downCall});
+            elevatorService.Setup(x => x.UpCalls).Returns(new HashSet<int> {upCall});
+            elevatorService.Setup(x => x.DownCalls).Returns(new HashSet<int> {downCall});
 
             // act
             var atApex = utilities.IsAtApex();
@@ -56,8 +56,8 @@ namespace DomainTests
             // arrange
             elevatorService.Setup(x => x.CurrentFloor).Returns(currentFloor);
             elevatorService.Setup(x => x.TotalFloors).Returns(5);
-            elevatorService.Setup(x => x.UpQueue).Returns(new HashSet<int> {upCall});
-            elevatorService.Setup(x => x.DownQueue).Returns(new HashSet<int> {downCall});
+            elevatorService.Setup(x => x.UpCalls).Returns(new HashSet<int> {upCall});
+            elevatorService.Setup(x => x.DownCalls).Returns(new HashSet<int> {downCall});
 
             // act
             var atApex = utilities.IsAtApex();
@@ -84,8 +84,8 @@ namespace DomainTests
             // arrange
             elevatorService.Setup(x => x.CurrentFloor).Returns(currentFloor);
             elevatorService.Setup(x => x.TotalFloors).Returns(5);
-            elevatorService.Setup(x => x.UpQueue).Returns(new HashSet<int> { upCall });
-            elevatorService.Setup(x => x.DownQueue).Returns(new HashSet<int> { downCall });
+            elevatorService.Setup(x => x.UpCalls).Returns(new HashSet<int> { upCall });
+            elevatorService.Setup(x => x.DownCalls).Returns(new HashSet<int> { downCall });
 
             // act
             var atNadir = utilities.IsAtNadir();
@@ -110,8 +110,8 @@ namespace DomainTests
             // arrange
             elevatorService.Setup(x => x.CurrentFloor).Returns(currentFloor);
             elevatorService.Setup(x => x.TotalFloors).Returns(5);
-            elevatorService.Setup(x => x.UpQueue).Returns(new HashSet<int> { upCall });
-            elevatorService.Setup(x => x.DownQueue).Returns(new HashSet<int> { downCall });
+            elevatorService.Setup(x => x.UpCalls).Returns(new HashSet<int> { upCall });
+            elevatorService.Setup(x => x.DownCalls).Returns(new HashSet<int> { downCall });
 
             // act
             var atNadir = utilities.IsAtNadir();
@@ -141,8 +141,8 @@ namespace DomainTests
             // arrange
             elevatorService.Setup(x => x.CurrentFloor).Returns(currentFloor);
             elevatorService.Setup(x => x.TotalFloors).Returns(5);
-            elevatorService.Setup(x => x.UpQueue).Returns(new HashSet<int>());
-            elevatorService.Setup(x => x.DownQueue).Returns(new HashSet<int> {downCall});
+            elevatorService.Setup(x => x.UpCalls).Returns(new HashSet<int>());
+            elevatorService.Setup(x => x.DownCalls).Returns(new HashSet<int> {downCall});
 
             // act
             var isThere = utilities.IsThereADowncallAboveCurrentFloor();
@@ -166,8 +166,8 @@ namespace DomainTests
             // arrange
             elevatorService.Setup(x => x.CurrentFloor).Returns(currentFloor);
             elevatorService.Setup(x => x.TotalFloors).Returns(5);
-            elevatorService.Setup(x => x.UpQueue).Returns(new HashSet<int>());
-            elevatorService.Setup(x => x.DownQueue).Returns(new HashSet<int> {DownCall});
+            elevatorService.Setup(x => x.UpCalls).Returns(new HashSet<int>());
+            elevatorService.Setup(x => x.DownCalls).Returns(new HashSet<int> {DownCall});
 
             // act
             var isThere = utilities.IsThereADowncallAboveCurrentFloor();
@@ -196,8 +196,8 @@ namespace DomainTests
             // arrange
             elevatorService.Setup(x => x.CurrentFloor).Returns(currentFloor);
             elevatorService.Setup(x => x.TotalFloors).Returns(5);
-            elevatorService.Setup(x => x.UpQueue).Returns(new HashSet<int> {upCall});
-            elevatorService.Setup(x => x.DownQueue).Returns(new HashSet<int>());
+            elevatorService.Setup(x => x.UpCalls).Returns(new HashSet<int> {upCall});
+            elevatorService.Setup(x => x.DownCalls).Returns(new HashSet<int>());
 
             // act
             var isThere = utilities.IsThereAnUpcallAboveCurrentFloor();
@@ -220,8 +220,8 @@ namespace DomainTests
             // arrange
             elevatorService.Setup(x => x.CurrentFloor).Returns(currentFloor);
             elevatorService.Setup(x => x.TotalFloors).Returns(5);
-            elevatorService.Setup(x => x.UpQueue).Returns(new HashSet<int>());
-            elevatorService.Setup(x => x.DownQueue).Returns(new HashSet<int> {upCall});
+            elevatorService.Setup(x => x.UpCalls).Returns(new HashSet<int>());
+            elevatorService.Setup(x => x.DownCalls).Returns(new HashSet<int> {upCall});
 
             // act
             var isThere = utilities.IsThereAnUpcallAboveCurrentFloor();
@@ -249,8 +249,8 @@ namespace DomainTests
             // arrange
             elevatorService.Setup(x => x.CurrentFloor).Returns(currentFloor);
             elevatorService.Setup(x => x.TotalFloors).Returns(5);
-            elevatorService.Setup(x => x.UpQueue).Returns(new HashSet<int>());
-            elevatorService.Setup(x => x.DownQueue).Returns(new HashSet<int> {downCall});
+            elevatorService.Setup(x => x.UpCalls).Returns(new HashSet<int>());
+            elevatorService.Setup(x => x.DownCalls).Returns(new HashSet<int> {downCall});
 
             // act
             var isThere = utilities.IsThereADowncallBelowCurrentFloor();
@@ -274,8 +274,8 @@ namespace DomainTests
             // arrange
             elevatorService.Setup(x => x.CurrentFloor).Returns(currentFloor);
             elevatorService.Setup(x => x.TotalFloors).Returns(5);
-            elevatorService.Setup(x => x.UpQueue).Returns(new HashSet<int>());
-            elevatorService.Setup(x => x.DownQueue).Returns(new HashSet<int> {DownCall});
+            elevatorService.Setup(x => x.UpCalls).Returns(new HashSet<int>());
+            elevatorService.Setup(x => x.DownCalls).Returns(new HashSet<int> {DownCall});
 
             // act
             var isThere = utilities.IsThereADowncallBelowCurrentFloor();
@@ -303,8 +303,8 @@ namespace DomainTests
             // arrange
             elevatorService.Setup(x => x.CurrentFloor).Returns(currentFloor);
             elevatorService.Setup(x => x.TotalFloors).Returns(5);
-            elevatorService.Setup(x => x.UpQueue).Returns(new HashSet<int> {upCall});
-            elevatorService.Setup(x => x.DownQueue).Returns(new HashSet<int>());
+            elevatorService.Setup(x => x.UpCalls).Returns(new HashSet<int> {upCall});
+            elevatorService.Setup(x => x.DownCalls).Returns(new HashSet<int>());
 
             // act
             var isThere = utilities.IsThereAnUpcallBelowCurrentFloor();
@@ -328,8 +328,8 @@ namespace DomainTests
             // arrange
             elevatorService.Setup(x => x.CurrentFloor).Returns(currentFloor);
             elevatorService.Setup(x => x.TotalFloors).Returns(5);
-            elevatorService.Setup(x => x.UpQueue).Returns(new HashSet<int>());
-            elevatorService.Setup(x => x.DownQueue).Returns(new HashSet<int> {upCall});
+            elevatorService.Setup(x => x.UpCalls).Returns(new HashSet<int>());
+            elevatorService.Setup(x => x.DownCalls).Returns(new HashSet<int> {upCall});
 
             // act
             var isThere = utilities.IsThereAnUpcallBelowCurrentFloor();
@@ -371,8 +371,8 @@ namespace DomainTests
 
             elevatorService.Setup(x => x.CurrentFloor).Returns(currentFloor);
             elevatorService.Setup(x => x.TotalFloors).Returns(5);
-            elevatorService.Setup(x => x.UpQueue).Returns(upQueue);
-            elevatorService.Setup(x => x.DownQueue).Returns(downQueue);
+            elevatorService.Setup(x => x.UpCalls).Returns(upQueue);
+            elevatorService.Setup(x => x.DownCalls).Returns(downQueue);
 
             // act
             var direction = utilities.GetClosestDirectionWhereCallAndDirectionAreSame();
@@ -409,7 +409,7 @@ namespace DomainTests
 
             elevatorService.Setup(x => x.CurrentFloor).Returns(currentFloor);
             elevatorService.Setup(x => x.TotalFloors).Returns(5);
-            elevatorService.Setup(x => x.DownQueue).Returns(downQueue);
+            elevatorService.Setup(x => x.DownCalls).Returns(downQueue);
 
             // Act
             var choice = utilities.GetClosestDowncallBelowCurrentFloor();
@@ -447,7 +447,7 @@ namespace DomainTests
 
             elevatorService.Setup(x => x.CurrentFloor).Returns(currentFloor);
             elevatorService.Setup(x => x.TotalFloors).Returns(5);
-            elevatorService.Setup(x => x.UpQueue).Returns(upQueue);
+            elevatorService.Setup(x => x.UpCalls).Returns(upQueue);
 
             // Act
             var choice = utilities.GetClosestUpcallAboveCurrentFloor();
@@ -484,8 +484,8 @@ namespace DomainTests
 
             elevatorService.Setup(x => x.CurrentFloor).Returns(currentFloor);
             elevatorService.Setup(x => x.TotalFloors).Returns(5);
-            elevatorService.Setup(x => x.UpQueue).Returns(upQueue);
-            elevatorService.Setup(x => x.DownQueue).Returns(downQueue);
+            elevatorService.Setup(x => x.UpCalls).Returns(upQueue);
+            elevatorService.Setup(x => x.DownCalls).Returns(downQueue);
 
             // Act
             var choice = utilities.GetFurthestDirectionWhereCallAndDirectionAreDifferent();
@@ -523,8 +523,8 @@ namespace DomainTests
 
             elevatorService.Setup(x => x.CurrentFloor).Returns(currentFloor);
             elevatorService.Setup(x => x.TotalFloors).Returns(5);
-            elevatorService.Setup(x => x.UpQueue).Returns(upQueue);
-            elevatorService.Setup(x => x.DownQueue).Returns(downQueue);
+            elevatorService.Setup(x => x.UpCalls).Returns(upQueue);
+            elevatorService.Setup(x => x.DownCalls).Returns(downQueue);
 
             // Act
             var choice = utilities.GetFurthestUpcallBelowCurrentFloor();
@@ -563,8 +563,8 @@ namespace DomainTests
 
             elevatorService.Setup(x => x.CurrentFloor).Returns(currentFloor);
             elevatorService.Setup(x => x.TotalFloors).Returns(5);
-            elevatorService.Setup(x => x.UpQueue).Returns(upQueue);
-            elevatorService.Setup(x => x.DownQueue).Returns(downQueue);
+            elevatorService.Setup(x => x.UpCalls).Returns(upQueue);
+            elevatorService.Setup(x => x.DownCalls).Returns(downQueue);
 
             // Act
             var choice = utilities.GetFurthestDowncallAboveCurrentFloor();

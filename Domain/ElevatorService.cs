@@ -10,20 +10,28 @@ namespace Domain
     // TODO: get timer stuff into infrastructure
     public class ElevatorService : IElevatorService
     {
-        public HashSet<int> UpQueue { get; } = new HashSet<int>();
-        public HashSet<int> DownQueue { get; } = new HashSet<int>();
+        // TODO: Change to ConcurrentDictionary
+        public HashSet<int> UpCalls { get; } = new HashSet<int>();
+        public HashSet<int> DownCalls { get; } = new HashSet<int>();
 
         public List<ICallPanel> ExteriorCallPanels { get; set; }
 
-        private DirectionEnum currentDirection = DirectionEnum.Stationary;
-        public int CurrentFloor { get; private set; }
+        private DirectionEnum currentDirection = DirectionEnum.Stationary; // Doesn't need to be syncronized. Only used by the single update thread
+
+        public int CurrentFloor
+        {
+            get { return Volatile.Read(ref currentFloor); }
+            private set { Volatile.Write(ref currentFloor, value);  }
+        }
+
         public int TotalFloors => ExteriorCallPanels.Count;
 
         private readonly Timer timer = new Timer();
         private readonly ElevatorServiceUtilities elevatorServiceUtilities;
-        private volatile bool requestStop;
+        private bool requestStop;
         private readonly IElevator elevator;
         private readonly IElevatorControls controls;
+        private int currentFloor;
 
         public ElevatorService(List<ICallPanel> exteriorCallPanels, IElevator elevator, IElevatorControls controls)
         {
@@ -64,7 +72,7 @@ namespace Domain
             }
             DetermineNewDirection();
 
-            if (!requestStop)
+            if (!Volatile.Read(ref requestStop))
             {
                 timer.Start(); //restart the timer
             }
@@ -72,10 +80,10 @@ namespace Domain
 
         private void DetermineNewDirection()
         {
-            if (DownQueue.Contains(CurrentFloor))
+            if (DownCalls.Contains(CurrentFloor))
             {
                 currentDirection = DirectionEnum.Down;
-            } else if (UpQueue.Contains(CurrentFloor))
+            } else if (UpCalls.Contains(CurrentFloor))
             {
                 currentDirection = DirectionEnum.Up;
             } else
@@ -106,11 +114,11 @@ namespace Domain
 
         private async Task PerformNecessaryDoorOperations()
         {
-            if (currentDirection.Equals(DirectionEnum.Up) && UpQueue.Contains(CurrentFloor))
+            if (currentDirection.Equals(DirectionEnum.Up) && UpCalls.Contains(CurrentFloor))
             {
-                while (UpQueue.Contains(CurrentFloor)) // allows user(s) to re-open door if they hit the button again before door operation completes
+                while (UpCalls.Contains(CurrentFloor)) // allows user(s) to re-open door if they hit the button again before door operation completes
                 {
-                    UpQueue.Remove(CurrentFloor);
+                    UpCalls.Remove(CurrentFloor);
                     Console.WriteLine($"Opening door on level {CurrentFloor}");
                     var callPanel = GetCallPanelForFloor(CurrentFloor);
                     await callPanel.DoorOpenEventHandlerAsync().ConfigureAwait(false);
@@ -120,11 +128,11 @@ namespace Domain
 
                 }
 
-            } else if (currentDirection.Equals(DirectionEnum.Down) && DownQueue.Contains(CurrentFloor))
+            } else if (currentDirection.Equals(DirectionEnum.Down) && DownCalls.Contains(CurrentFloor))
             {
-                while (DownQueue.Contains(CurrentFloor))
+                while (DownCalls.Contains(CurrentFloor))
                 {
-                    DownQueue.Remove(CurrentFloor);
+                    DownCalls.Remove(CurrentFloor);
                     Console.WriteLine($"Opening door on level {CurrentFloor}");
                     await GetCallPanelForFloor(CurrentFloor).DoorOpenEventHandlerAsync().ConfigureAwait(false);
                     Console.WriteLine($"Closing door on level {CurrentFloor}");
@@ -152,14 +160,14 @@ namespace Domain
                 case DirectionEnum.Up:
                     Console.WriteLine($"Moving up from floor {CurrentFloor}");
                     await elevator.MoveUpAsync().ConfigureAwait(false);
-                    CurrentFloor++;
+                    Interlocked.Increment(ref currentFloor);
                     Console.WriteLine($"Crrived at {CurrentFloor}");
                     await UpdateFloorDisplays().ConfigureAwait(false);
                     break;
                 default:
                     Console.WriteLine($"Moving from floor {CurrentFloor} to {CurrentFloor - 1}");
                     await elevator.MoveDownAsync().ConfigureAwait(false);
-                    CurrentFloor--;
+                    Interlocked.Decrement(ref currentFloor);
                     await UpdateFloorDisplays().ConfigureAwait(false);
                     break;
             }
@@ -167,15 +175,15 @@ namespace Domain
         
         public Task UpCallRequestAsync(int floor)
         {
-            UpQueue.Add(floor);
-            return Task.FromResult(0);
+            UpCalls.Add(floor);
+            return Task.CompletedTask;
 
         }
 
         public Task DownCallRequestAsync(int floor)
         {
-            DownQueue.Add(floor);
-            return Task.FromResult(0);
+            DownCalls.Add(floor);
+            return Task.CompletedTask;
         }
 
         public ICallPanel GetCallPanelForFloor(int i)
@@ -185,16 +193,16 @@ namespace Domain
 
         public Task StopAsync()
         {
-            requestStop = true;
+            Volatile.Write(ref requestStop, true);
             timer.Stop();
-            return Task.FromResult(0);
+            return Task.CompletedTask;
         }
 
         public Task StartAsync()
         {
-            requestStop = false;
+            Volatile.Write(ref requestStop, false);
             timer.Start();
-            return Task.FromResult(0);
+            return Task.CompletedTask;
         }
 
     }

@@ -67,7 +67,7 @@ namespace DomainTests
             elevator.Setup(x => x.MoveUpAsync()).Returns(() =>
             {
                 moveUpCount++;
-                return Task.FromResult(0);
+                return Task.CompletedTask;
             });
             await service.StartAsync().ConfigureAwait(false);
 

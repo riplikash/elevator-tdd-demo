@@ -39,7 +39,7 @@ namespace Domain
         {
             for (var i = 1; i < elevatorService.CurrentFloor; i++)
             {
-                if (elevatorService.UpQueue.Contains(i)) return i;
+                if (elevatorService.UpCalls.Contains(i)) return i;
             }
             return null;
         }
@@ -48,7 +48,7 @@ namespace Domain
         {
             for (var i = elevatorService.TotalFloors; i > elevatorService.CurrentFloor; i--)
             {
-                if (elevatorService.DownQueue.Contains(i)) return i;
+                if (elevatorService.DownCalls.Contains(i)) return i;
             }
             return null;
         }
@@ -90,7 +90,7 @@ namespace Domain
         {
             for (var i = elevatorService.CurrentFloor - 1; i >= 1; i--)
             {
-                if (elevatorService.DownQueue.Contains(i)) return i;
+                if (elevatorService.DownCalls.Contains(i)) return i;
             }
             return null;
         }
@@ -99,7 +99,7 @@ namespace Domain
         {
             for (var i = elevatorService.CurrentFloor + 1; i <= elevatorService.TotalFloors; i++)
             {
-                if (elevatorService.UpQueue.Contains(i)) return i;
+                if (elevatorService.UpCalls.Contains(i)) return i;
             }
             return null;
         }
@@ -121,7 +121,7 @@ namespace Domain
             if (elevatorService.CurrentFloor == 1) return false;
             for (var i = elevatorService.CurrentFloor - 1; i >= 1; i--)
             {
-                if (elevatorService.UpQueue.Contains(i)) return true;
+                if (elevatorService.UpCalls.Contains(i)) return true;
             }
             return false;
         }
@@ -131,7 +131,7 @@ namespace Domain
             if (elevatorService.CurrentFloor == 1) return false;
             for (var i = elevatorService.CurrentFloor -1; i >= 1; i--)
             {
-                if (elevatorService.DownQueue.Contains(i)) return true;
+                if (elevatorService.DownCalls.Contains(i)) return true;
             }
             return false;
         }
@@ -141,7 +141,7 @@ namespace Domain
             if (elevatorService.CurrentFloor == elevatorService.TotalFloors) return false;
             for (var i = elevatorService.CurrentFloor + 1; i <= elevatorService.TotalFloors; i++)
             {
-                if (elevatorService.UpQueue.Contains(i)) return true;
+                if (elevatorService.UpCalls.Contains(i)) return true;
             }
             return false;
         }
@@ -151,7 +151,7 @@ namespace Domain
             if (elevatorService.CurrentFloor == elevatorService.TotalFloors) return false;
             for (var i = elevatorService.CurrentFloor + 1; i <= elevatorService.TotalFloors; i++)
             {
-                if (elevatorService.DownQueue.Contains(i)) return true;
+                if (elevatorService.DownCalls.Contains(i)) return true;
             }
             return false;
         }

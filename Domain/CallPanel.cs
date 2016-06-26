@@ -1,25 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace Domain
 {
     public class CallPanel : ICallPanel
     {
-        private static int _floorCounter;
+        // TODO: Make threadsafe
         private readonly IElevatorService elevatorService;
         public string ElevatorFloorDisplay { get; private set; }
         public CallPanel(IElevatorService elevatorService)
         {
             this.elevatorService = elevatorService;
-            Floor = System.Threading.Interlocked.Increment(ref _floorCounter); ;
             IsDoorOpen = false;
             ElevatorFloorDisplay = "";
         }
 
-        public int Floor { get; }
+        public int Floor => elevatorService.CurrentFloor;
         public int TotalFloors => elevatorService.TotalFloors;
 
         public bool IsDoorOpen { get; private set; }
@@ -35,22 +30,23 @@ namespace Domain
             await elevatorService.DownCallRequestAsync(Floor).ConfigureAwait(false);
         }
 
+        // Should this be event handler?
         public Task FloorChangeEventHandlerAsync(int newFloor)
         {
             ElevatorFloorDisplay = newFloor.ToString();
-            return Task.FromResult(0);
+            return Task.CompletedTask;
         }
 
         public Task DoorCloseEventHandlerAsync()
         {
             IsDoorOpen = false;
-            return Task.FromResult(0);
+            return Task.CompletedTask;
         }
 
         public Task DoorOpenEventHandlerAsync()
         {
             IsDoorOpen = true;
-            return Task.FromResult(0);
+            return Task.CompletedTask;
         }
     }
 }

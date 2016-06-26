@@ -7,8 +7,8 @@ namespace Domain
 {
     public interface IElevatorService
     {
-        HashSet<int> UpQueue { get; }
-        HashSet<int> DownQueue { get; }
+        HashSet<int> UpCalls { get; }
+        HashSet<int> DownCalls { get; }
         int CurrentFloor { get; }
         int TotalFloors { get; }
         Task UpCallRequestAsync(int floor);

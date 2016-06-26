@@ -38,17 +38,17 @@ namespace ApplicationServices
         }
 
 
-        public async Task EnterDoorWhenItOpensAsync()
+        // TODO : Put cancellation token here and let UI handle the cancellation
+        public Task EnterDoorWhenItOpensAsync()
         {
             var cts = new CancellationTokenSource();
             cts.CancelAfter(11000); // TODO: make configurable. This is based on the curret setup of 5 floors
                 // TODO: handle cancellation and timeout
-            await EnterDoorWaitMode(cts.Token).ConfigureAwait(false);
+                // TODO: eventually the cancellation token should be passed in here, but for now I'm just going to configure it on a timeout
+            return EnterDoorWaitModeAsync(cts.Token); 
         }
 
-        private readonly Timer timer = new Timer();
-
-        private Task EnterDoorWaitMode(CancellationToken token)
+        private Task EnterDoorWaitModeAsync(CancellationToken token)
         {
             // TODO: Really should be timer based, but this will work for now
             while (!token.IsCancellationRequested)
@@ -58,7 +58,7 @@ namespace ApplicationServices
                     if (callPanel.IsDoorOpen)
                     {
                         inElevator = false;
-                        return Task.FromResult(0);
+                        return Task.CompletedTask;
                     }
                 }
                 else if (inElevator & callPanel == null)
@@ -70,7 +70,7 @@ namespace ApplicationServices
                     if (callPanel.IsDoorOpen)
                     {
                         inElevator = true;
-                        return Task.FromResult(0);
+                        return Task.CompletedTask;
                     }
                 }
                 else
