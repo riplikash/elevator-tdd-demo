@@ -12,10 +12,12 @@ namespace ApplicationServices.Tests
         [Theory, DapperAutoData()]
         public async void CheckCurrentFloorAsync_InElevator_ReportsElevatorFloor(
             int currentFloor,
+            [Frozen] Mock<ICallPanel> panel,
             [Frozen] Mock<IElevatorService> elevatorService,
             ElevatorInteriorActions elevator)
         {
             // arrange
+            panel.Setup(x => x.IsDoorOpen).Returns(true);
             elevatorService.Setup(x => x.CurrentFloor).Returns(currentFloor);
             await elevator.EnterDoorWhenItOpensAsync().ConfigureAwait(false);
 

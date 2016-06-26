@@ -30,16 +30,6 @@ namespace DomainTests
             service.CurrentFloor.Should().Be(1);
         }
 
-//        public void DepartsFloor_DoorCloseCalled(ElevatorService service)
-//        {
-//            // Arrange
-//            var floorOnePanel = service.GetExternalCallInterfaceForFloor(1);
-//            // Act
-//
-//
-//            // Assert
-//        }
-
         [Theory, DapperAutoData]
         public async void ArrivesAtFloor_DoorOpenIsCalled(
             IElevatorService service)
