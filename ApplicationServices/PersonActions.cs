@@ -50,7 +50,7 @@ namespace ApplicationServices
 
         private Task EnterDoorWaitModeAsync(CancellationToken token)
         {
-            // TODO: Really should be timer based, but this will work for now
+            // TODO: Really should be timer based, but this will work for now 
             while (!token.IsCancellationRequested)
             {
                 if (inElevator && callPanel != null)
