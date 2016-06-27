@@ -17,28 +17,28 @@ namespace DomainTests
             IElevator elevator, IElevatorControls controls)
         {
             // Act
-            var service = new ElevatorService(floorInterface, elevator, controls);
+            var service = new ElevatorService(elevator);
 
             // Assert
             service.CurrentFloor.Should().Be(1);
         }
 
         [Theory, DapperAutoData]
-        public async void ArrivesAtFloor_DoorOpenIsCalled(
-            Mock<ICallPanel> panel1,
-            Mock<ICallPanel> panel2,
-            IElevator elevator,
-            IElevatorControls controls)
+        public async void ArrivesAtFloor_DoorOpenIsCalled(Mock<ICallPanel> panel1, Mock<ICallPanel> panel2, IElevator elevator)
         {
             // Arrange
-            ElevatorService service = new ElevatorService(new List<ICallPanel> {panel1.Object, panel2.Object}, elevator, controls);
+            ElevatorService service = new ElevatorService(elevator);
+            panel1.Setup(x => x.Floor).Returns(1);
+            panel2.Setup(x => x.Floor).Returns(2);
+            service.RegisterCallPanel(panel1.Object);
+            service.RegisterCallPanel(panel2.Object);
             await service.StartAsync().ConfigureAwait(false);
 
             // Act
             await service.UpCallRequestAsync(2).ConfigureAwait(false);
 
             // Assert
-            Thread.Sleep(2000);
+            await Task.Delay(2000).ConfigureAwait(false);
             panel2.Verify(x => x.DoorOpenEventHandlerAsync(), Times.Once);
         }
 
@@ -60,9 +60,10 @@ namespace DomainTests
         [Theory, DapperAutoData]
         public async void FloorChange_FloorChangeEventHandlerCalledOnEachFloor(
             [Frozen] Mock<IElevator> elevator,
-            ElevatorService service)
+            List<Mock<ICallPanel>> panels)
         {
             // Arrange
+            var service = GetFunctionalElevatorService(panels, elevator.Object);
             int moveUpCount = 0;
             elevator.Setup(x => x.MoveUpAsync()).Returns(() =>
             {
@@ -78,23 +79,40 @@ namespace DomainTests
             // TODO: still a bit hacky. Need to create a proper way to wait on floor movement
             while (moveUpCount != service.TotalFloors - 1)
             {
-                Thread.Sleep(100);
+                await Task.Delay(100).ConfigureAwait(false);
             }
             elevator.Verify(x => x.MoveUpAsync(), Times.Exactly(service.TotalFloors - 1));
         }
 
 
         [Theory, DapperAutoData]
-        public void GetInterfaceForFloor_FloorCallInterfacesHaveBeenInjected_CorrectInterfaceIsReturned(
-            List<ICallPanel> seedExternalCallInterfaces,
-            IElevator elevator,
-            IElevatorControls controls)
+        public async void RegisterCallPanel_PassACallPanel_CallPanelIsRegistered(
+
+            List<Mock<ICallPanel>> panels,
+            IElevator elevator)
         {
-            var service = new ElevatorService(seedExternalCallInterfaces, elevator, controls);
-            for (int i = 0; i < seedExternalCallInterfaces.Count; i++)
+            // Arrange
+            var service = GetFunctionalElevatorService(panels, elevator);
+            await service.StartAsync().ConfigureAwait(false);
+
+            // act
+            service.RegisterCallPanel(panels[0].Object);
+            service.RegisterCallPanel(panels[1].Object);
+
+            // assert
+            service.GetCallPanelForFloor(1).Should().Be(panels[0].Object);
+            service.GetCallPanelForFloor(2).Should().Be(panels[1].Object);
+
+        }
+
+        private static ElevatorService GetFunctionalElevatorService(List<Mock<ICallPanel>> panels, IElevator elevator)
+        {
+            ElevatorService service = new ElevatorService(elevator);
+            foreach (var panel in panels)
             {
-                service.GetCallPanelForFloor(i + 1).Should().Be(seedExternalCallInterfaces[i]);
+                service.RegisterCallPanel(panel.Object);
             }
+            return service;
         }
 
         //  GetInterfaceForFloor_OutOfRangeRequest_ThrowsException
@@ -103,13 +121,15 @@ namespace DomainTests
 
         [Theory, DapperAutoData]
         public async void UpCall_elevatorIsBelowWithNoOtherCalls_ElevatorComesOnlyToThisFloor(
-            List<Mock<ICallPanel>> callInterfaces,
-            IElevator elevator,
-            IElevatorControls controls)
+            List<Mock<ICallPanel>> panels,
+            IElevator elevator)
         {
             // Arrange
-            List<ICallPanel> callPanels = callInterfaces.Select(x => x.Object).ToList(); 
-            var service = new ElevatorService(callPanels, elevator, controls);
+            ElevatorService service = new ElevatorService(elevator);
+            foreach (var panel in panels)
+            {
+                service.RegisterCallPanel(panel.Object);
+            }
             await service.StartAsync().ConfigureAwait(false);
 
             // Act
@@ -119,13 +139,13 @@ namespace DomainTests
             // Assert
             while (service.CurrentFloor != service.TotalFloors)
             {
-                Thread.Sleep(100);
+                await Task.Delay(100).ConfigureAwait(false);
             }
-            Thread.Sleep(3000);
-            callInterfaces[1].Verify(x => x.DoorOpenEventHandlerAsync(), Times.Never);
-            callInterfaces[2].Verify(x => x.DoorOpenEventHandlerAsync(), Times.Never);
-            callInterfaces[3].Verify(x => x.DoorOpenEventHandlerAsync(), Times.Never);
-            callInterfaces[4].Verify(x => x.DoorOpenEventHandlerAsync(), Times.Once);
+            await Task.Delay(3000).ConfigureAwait(false);
+            panels[1].Verify(x => x.DoorOpenEventHandlerAsync(), Times.Never);
+            panels[2].Verify(x => x.DoorOpenEventHandlerAsync(), Times.Never);
+            panels[3].Verify(x => x.DoorOpenEventHandlerAsync(), Times.Never);
+            panels[4].Verify(x => x.DoorOpenEventHandlerAsync(), Times.Once);
         }
 
         [Theory, DapperAutoData]
@@ -143,31 +163,10 @@ namespace DomainTests
             // Assert
             while (service.CurrentFloor != service.TotalFloors)
             {
-                Thread.Sleep(100);
+                await Task.Delay(100).ConfigureAwait(false);
             }
-            Thread.Sleep(3000);
+            await Task.Delay(3000).ConfigureAwait(false);
             elevator.Verify(x => x.MoveUpAsync(), Times.Exactly(4));
-        }
-
-        [Theory, DapperAutoData]
-        public async void UpCall_ElevatorIsBelowWithUpCallsBelow_ElevatorStopsAtFloorsInOrder(
-            [Frozen] Mock<IElevator> elevator,
-            ElevatorService service)
-        {
-            // Arrange
-            await service.StopAsync().ConfigureAwait(false);
-            await service.UpCallRequestAsync(2).ConfigureAwait(false);
-            await service.UpCallRequestAsync(3).ConfigureAwait(false);
-            var floor2 = service.GetCallPanelForFloor(2);
-            var floor3 = service.GetCallPanelForFloor(3);
-            var floor5 = service.GetCallPanelForFloor(5);
-            elevator.Setup(x => x.MoveUpAsync()).Callback(() => Thread.Sleep(1000));
-            await service.StartAsync().ConfigureAwait(false);
-
-            // Act
-            await service.UpCallRequestAsync(5).ConfigureAwait(false);
-
-            // Assert
         }
 
         //        UpCall_elevatorIsBelowWithUpCallsAbove_ElevatorStopsHereFirst
@@ -184,6 +183,13 @@ namespace DomainTests
 
         #endregion
 
+        #region RegisterCallPanel
+
+        public void RegisterCallPanel_PassACallPanel_CallPanelIsRegistered()
+        {
+            
+        }
+        #endregion
 
     }
 }

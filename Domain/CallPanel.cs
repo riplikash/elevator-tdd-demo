@@ -7,14 +7,19 @@ namespace Domain
         // TODO: Make threadsafe
         private readonly IElevatorService elevatorService;
         public string ElevatorFloorDisplay { get; private set; }
+        private static int _floorClounter = 0;
         public CallPanel(IElevatorService elevatorService)
         {
             this.elevatorService = elevatorService;
+            Floor = _floorClounter;
+            System.Threading.Interlocked.Increment(ref _floorClounter);
+            elevatorService.RegisterCallPanel(this);
             IsDoorOpen = false;
             ElevatorFloorDisplay = "";
         }
 
-        public int Floor => elevatorService.CurrentFloor;
+        public int Floor { get; set; }
+
         public int TotalFloors => elevatorService.TotalFloors;
 
         public bool IsDoorOpen { get; private set; }

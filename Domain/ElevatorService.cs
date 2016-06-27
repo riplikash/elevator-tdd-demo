@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -7,14 +8,13 @@ using Timer = System.Timers.Timer;
 
 namespace Domain
 {
-    // TODO: get timer stuff into infrastructure
     public class ElevatorService : IElevatorService
     {
         // TODO: Change to ConcurrentDictionary
         public HashSet<int> UpCalls { get; } = new HashSet<int>();
         public HashSet<int> DownCalls { get; } = new HashSet<int>();
 
-        public List<ICallPanel> ExteriorCallPanels { get; set; }
+        private ConcurrentDictionary<int, ICallPanel> ExteriorCallPanels { get; }
 
         private DirectionEnum currentDirection = DirectionEnum.Stationary; // Doesn't need to be syncronized. Only used by the single update thread
 
@@ -30,26 +30,15 @@ namespace Domain
         private readonly ElevatorServiceUtilities elevatorServiceUtilities;
         private bool requestStop;
         private readonly IElevator elevator;
-        private readonly IElevatorControls controls;
         private int currentFloor;
 
-        public ElevatorService(List<ICallPanel> exteriorCallPanels, IElevator elevator, IElevatorControls controls)
-        {
-            CurrentFloor = 1;
-            this.ExteriorCallPanels = exteriorCallPanels;
-            this.elevator = elevator;
-            this.controls = controls;
-            SetupTimer();
-            elevatorServiceUtilities = new ElevatorServiceUtilities(this);
-        }
-
-        public ElevatorService(IElevator elevator, IElevatorControls controls)
+        public ElevatorService(IElevator elevator)
         {
             CurrentFloor = 1;
             this.elevator = elevator;
-            this.controls = controls;
             SetupTimer();
             elevatorServiceUtilities = new ElevatorServiceUtilities(this);
+            ExteriorCallPanels = new ConcurrentDictionary<int, ICallPanel>();
         }
 
         private void SetupTimer()
@@ -122,7 +111,7 @@ namespace Domain
                     Console.WriteLine($"Opening door on level {CurrentFloor}");
                     var callPanel = GetCallPanelForFloor(CurrentFloor);
                     await callPanel.DoorOpenEventHandlerAsync().ConfigureAwait(false);
-//                    Thread.Sleep(3000); // TODO: Get this configurable
+//                    await Task.Delay(3000).ConfigureAwait(false); // TODO: Get this configurable
                     await callPanel.DoorCloseEventHandlerAsync().ConfigureAwait(false);
                     Console.WriteLine($"Closing door on level {CurrentFloor}");
 
@@ -136,17 +125,9 @@ namespace Domain
                     Console.WriteLine($"Opening door on level {CurrentFloor}");
                     await GetCallPanelForFloor(CurrentFloor).DoorOpenEventHandlerAsync().ConfigureAwait(false);
                     Console.WriteLine($"Closing door on level {CurrentFloor}");
-                    Thread.Sleep(3000); // TODO: this is a magic value. Should be set in configuration somewhere
+                    await Task.Delay(3000).ConfigureAwait(false); // TODO: this is a magic value. Should be set in configuration somewhere
                     await GetCallPanelForFloor(CurrentFloor).DoorCloseEventHandlerAsync().ConfigureAwait(false);
                 }
-            }
-        }
-
-        private async Task UpdateFloorDisplays()
-        {
-            foreach (var floorInterface in ExteriorCallPanels)
-            {
-                await floorInterface.FloorChangeEventHandlerAsync(CurrentFloor).ConfigureAwait(false);
             }
         }
 
@@ -162,13 +143,13 @@ namespace Domain
                     await elevator.MoveUpAsync().ConfigureAwait(false);
                     Interlocked.Increment(ref currentFloor);
                     Console.WriteLine($"Crrived at {CurrentFloor}");
-                    await UpdateFloorDisplays().ConfigureAwait(false);
+//                    await UpdateFloorDisplays().ConfigureAwait(false); // TODO: use .net messaging
                     break;
                 default:
                     Console.WriteLine($"Moving from floor {CurrentFloor} to {CurrentFloor - 1}");
                     await elevator.MoveDownAsync().ConfigureAwait(false);
                     Interlocked.Decrement(ref currentFloor);
-                    await UpdateFloorDisplays().ConfigureAwait(false);
+//                    await UpdateFloorDisplays().ConfigureAwait(false);
                     break;
             }
         }
@@ -186,9 +167,9 @@ namespace Domain
             return Task.CompletedTask;
         }
 
-        public ICallPanel GetCallPanelForFloor(int i)
+        public ICallPanel GetCallPanelForFloor(int floor)
         {
-            return ExteriorCallPanels[i - 1];
+            return ExteriorCallPanels[floor];
         }
 
         public Task StopAsync()
@@ -205,6 +186,10 @@ namespace Domain
             return Task.CompletedTask;
         }
 
+        public void RegisterCallPanel(ICallPanel newPanel)
+        {
+            ExteriorCallPanels.TryAdd(newPanel.Floor, newPanel);
+        }
     }
 
     public enum DirectionEnum

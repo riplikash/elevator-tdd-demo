@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 
 namespace ApplicationServices
 {
@@ -6,6 +7,6 @@ namespace ApplicationServices
     {
         string CheckElevatorPositionAsync();
         string CheckSurroundings();
-        Task EnterDoorWhenItOpensAsync();
+        Task EnterDoorWhenItOpensAsync(CancellationToken token);
     }
 }

@@ -8,6 +8,19 @@ namespace DomainTests
 {
     public class CallPanelTests
     {
+
+        [Theory, DapperAutoData()]
+        public void Constructor_CreateNew_SelfRegisters(Mock<IElevatorService> elevatorService)
+        {
+            // arrange
+
+            // act
+            var panel = new CallPanel(elevatorService.Object);
+
+            // assert
+            elevatorService.Verify(x => x.RegisterCallPanel(panel), Times.Once);
+        }
+
         [Theory]
         [DapperAutoData]
         public async void UpCallButtonPress_ButtonIsPressed_CurrentFloorAddedToUpcallQueue(

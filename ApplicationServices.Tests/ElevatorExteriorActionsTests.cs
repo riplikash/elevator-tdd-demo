@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Alexprof.AutoMoq;
 using Domain;
@@ -16,7 +17,7 @@ namespace ApplicationServices.Tests
         private static async Task GetInElevator(Mock<ICallPanel> originalCallPanel, ElevatorExteriorActions elevator)
         {
             originalCallPanel.Setup(x => x.IsDoorOpen).Returns(true);
-            await elevator.EnterDoorWhenItOpensAsync().ConfigureAwait(false);
+            await elevator.EnterDoorWhenItOpensAsync(CancellationToken.None).ConfigureAwait(false);
         }
 
         #region PushGoingUpButtonAsync

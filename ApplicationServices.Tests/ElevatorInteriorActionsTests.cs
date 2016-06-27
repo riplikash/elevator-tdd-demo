@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 using Alexprof.AutoMoq;
 using Domain;
 using FluentAssertions;
@@ -19,7 +20,7 @@ namespace ApplicationServices.Tests
             // arrange
             panel.Setup(x => x.IsDoorOpen).Returns(true);
             elevatorService.Setup(x => x.CurrentFloor).Returns(currentFloor);
-            await elevator.EnterDoorWhenItOpensAsync().ConfigureAwait(false);
+            await elevator.EnterDoorWhenItOpensAsync(CancellationToken.None).ConfigureAwait(false);
 
             // act
             var reportedFloor = elevator.CheckCurrentFloorAsync();
@@ -48,7 +49,7 @@ namespace ApplicationServices.Tests
 
             // act
             await elevator.PushButtonNumberAsync(1).ConfigureAwait(false);
-            await elevator.EnterDoorWhenItOpensAsync().ConfigureAwait(false);
+            await elevator.EnterDoorWhenItOpensAsync(CancellationToken.None).ConfigureAwait(false);
 
             // assert
             newPanel.Verify(x => x.IsDoorOpen, Times.Once);
@@ -57,7 +58,7 @@ namespace ApplicationServices.Tests
         private static async Task GetInElevator(Mock<ICallPanel> originalCallPanel, ElevatorInteriorActions elevator)
         {
             originalCallPanel.Setup(x => x.IsDoorOpen).Returns(true);
-            await elevator.EnterDoorWhenItOpensAsync().ConfigureAwait(false);
+            await elevator.EnterDoorWhenItOpensAsync(CancellationToken.None).ConfigureAwait(false);
         }
 
         [Theory]

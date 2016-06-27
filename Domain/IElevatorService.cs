@@ -13,8 +13,9 @@ namespace Domain
         int TotalFloors { get; }
         Task UpCallRequestAsync(int floor);
         Task DownCallRequestAsync(int floor);
-        ICallPanel GetCallPanelForFloor(int i);
+        ICallPanel GetCallPanelForFloor(int floor);
         Task StopAsync();
         Task StartAsync();
+        void RegisterCallPanel(ICallPanel newPanel);
     }
 }

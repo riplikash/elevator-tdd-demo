@@ -4,7 +4,7 @@ namespace Domain
 {
     public class ElevatorServiceUtilities
     {
-        public IElevatorService elevatorService;
+        private readonly IElevatorService elevatorService;
 
         public ElevatorServiceUtilities(IElevatorService elevatorService)
         {
