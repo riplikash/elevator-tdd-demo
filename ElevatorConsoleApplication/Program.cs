@@ -2,6 +2,7 @@
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using ElevatorConsoleApplication.Startup;
+using Nito.AsyncEx;
 
 namespace ElevatorConsoleApplication
 {
@@ -22,8 +23,18 @@ namespace ElevatorConsoleApplication
 
         static async Task<int> MainAsync(string[] args)
         {
-        
-      }
+            try
+            {
+                var app = new AppStart();
+                await app.Run().ConfigureAwait(false);
+                
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+            return await Task.FromResult(0).ConfigureAwait(false);
+        }
 
     }
 }

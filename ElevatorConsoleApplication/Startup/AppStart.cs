@@ -18,7 +18,7 @@ namespace ElevatorConsoleApplication.Startup
             }
             await service.StartAsync().ConfigureAwait(false);
             var engine = kernel.Get<Engine.Engine>();
-            await engine.ExteriorScenarioRun().ConfigureAwait(false);
+            await engine.MainLoop().ConfigureAwait(false);
         }
     }
 }

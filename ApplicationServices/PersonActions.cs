@@ -1,27 +1,24 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Timers;
 using Domain;
-using Timer = System.Timers.Timer;
 
 namespace ApplicationServices
 {
     public class PersonActions : IPersonActions
     {
         internal readonly IElevatorService ElevatorService;
-        internal  ICallPanel callPanel;
-        internal readonly IElevatorControls controls;
-        internal bool inElevator = false;
+        internal static ICallPanel CallPanel;
+        private readonly IElevatorControls controls;
+        internal static bool InElevator;
 
         public PersonActions(IElevatorService elevatorService, ICallPanel callPanel, IElevatorControls controls)
         {
             this.ElevatorService = elevatorService;
-            this.callPanel = callPanel;
+            PersonActions.CallPanel = callPanel;
             this.controls = controls;
         }
+
 
         public string CheckElevatorPositionAsync()
         {
@@ -30,12 +27,13 @@ namespace ApplicationServices
 
         public string CheckSurroundings()
         {
-            if (inElevator)
+            if (InElevator)
             {
                 return "In elevator";
             } 
-            return $"Floor {callPanel.Floor}";
+            return $"Floor {CallPanel.Floor}";
         }
+
 
 
         // TODO : Put cancellation token here and let UI handle the cancellation
@@ -49,25 +47,25 @@ namespace ApplicationServices
             // TODO: Really should be timer based, but this will work for now 
             while (!token.IsCancellationRequested)
             {
-                if (inElevator && callPanel != null)
+                if (InElevator && CallPanel != null)
                 {
-                    if (callPanel.IsDoorOpen)
+                    if (CallPanel.IsDoorOpen)
                     {
-                        inElevator = false;
+                        InElevator = false;
                         return;
                     }
                 }
-                else if (inElevator & callPanel == null)
+                else if (InElevator & CallPanel == null)
                 {
                     throw new ArgumentException("You haven't selected a floor");
                 }
-                else if (!inElevator && callPanel != null)
+                else if (!InElevator && CallPanel != null)
                 {
-                    Console.WriteLine("Attempting to enter door at floor" + callPanel.Floor);
-                    if (callPanel.IsDoorOpen)
+                    Console.WriteLine("Attempting to enter door at floor" + CallPanel.Floor);
+                    if (CallPanel.IsDoorOpen)
                     {
                         Console.WriteLine("Door is open. Entering door.");
-                        inElevator = true;
+                        InElevator = true;
                         return;
                     }
                 }

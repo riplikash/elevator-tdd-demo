@@ -21,7 +21,7 @@ namespace ApplicationServices
        
         public async Task PushButtonNumberAsync(int desiredFloor)
         {
-            if (inElevator == false) throw new Exception("You are not in an elevator");
+            if (InElevator == false) throw new Exception("You are not in an elevator");
             if (ElevatorService.CurrentFloor > desiredFloor)
             {
                 await ElevatorService.DownCallRequestAsync(desiredFloor).ConfigureAwait(false);
@@ -30,7 +30,7 @@ namespace ApplicationServices
             {
                 await ElevatorService.UpCallRequestAsync(desiredFloor).ConfigureAwait(false);
             }
-            callPanel = ElevatorService.GetCallPanelForFloor(desiredFloor);
+            CallPanel = ElevatorService.GetCallPanelForFloor(desiredFloor);
         }
     }
 }

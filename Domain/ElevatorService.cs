@@ -142,7 +142,7 @@ namespace Domain
                     Console.WriteLine($"Moving up from floor {CurrentFloor}");
                     await elevator.MoveUpAsync().ConfigureAwait(false);
                     Interlocked.Increment(ref currentFloor);
-                    Console.WriteLine($"Crrived at {CurrentFloor}");
+                    Console.WriteLine($"Arrived at {CurrentFloor}");
 //                    await UpdateFloorDisplays().ConfigureAwait(false); // TODO: use .net messaging
                     break;
                 default:
