@@ -11,7 +11,7 @@ namespace ApplicationServices.Tests
     public class ElevatorInteriorActionsTests
     {
         [Theory, DapperAutoData()]
-        public async void CheckCurrentFloorAsync_InElevator_ReportsElevatorFloor(
+        public void CheckCurrentFloorAsync_InElevator_ReportsElevatorFloor(
             int currentFloor,
             [Frozen] Mock<ICallPanel> panel,
             [Frozen] Mock<IElevatorService> elevatorService,
@@ -20,7 +20,7 @@ namespace ApplicationServices.Tests
             // arrange
             panel.Setup(x => x.IsDoorOpen).Returns(true);
             elevatorService.Setup(x => x.CurrentFloor).Returns(currentFloor);
-            await elevator.EnterDoorWhenItOpensAsync(CancellationToken.None).ConfigureAwait(false);
+            elevator.EnterDoor();
 
             // act
             var reportedFloor = elevator.CheckCurrentFloorAsync();
@@ -50,16 +50,16 @@ namespace ApplicationServices.Tests
 
             // act
             await elevator.PushButtonNumberAsync(1).ConfigureAwait(false);
-            await elevator.EnterDoorWhenItOpensAsync(CancellationToken.None).ConfigureAwait(false);
+            elevator.EnterDoor();
 
             // assert
             elevator.CallPanel.Should().Be(newPanel.Object);
         }
 
-        private static async Task GetInElevator(Mock<ICallPanel> originalCallPanel, ElevatorInteriorActions elevator)
+        private static void GetInElevator(Mock<ICallPanel> originalCallPanel, ElevatorInteriorActions elevator)
         {
             originalCallPanel.Setup(x => x.IsDoorOpen).Returns(true);
-            await elevator.EnterDoorWhenItOpensAsync(CancellationToken.None).ConfigureAwait(false);
+            elevator.EnterDoor();
         }
 
         [Theory]
@@ -77,7 +77,7 @@ namespace ApplicationServices.Tests
             ElevatorInteriorActions elevator)
         {
             // arrange
-            await GetInElevator(originalCallPanel, elevator).ConfigureAwait(false);
+            GetInElevator(originalCallPanel, elevator);
             elevatorService.Setup(x => x.CurrentFloor).Returns(currentFloor);
 
             // act
@@ -119,7 +119,7 @@ namespace ApplicationServices.Tests
             ElevatorInteriorActions elevator)
         {
             // arrange
-            await GetInElevator(originalCallPanel, elevator).ConfigureAwait(false);
+            GetInElevator(originalCallPanel, elevator);
             elevatorService.Setup(x => x.CurrentFloor).Returns(currentFloor);
 
             // act

@@ -56,84 +56,71 @@ namespace ApplicationServices.Tests
             whereAmI.Should().Be($"Floor {panel.Object.Floor}");
         }
 
-
-        [Theory]
-        [DapperAutoData()]
-        public async void EnterDoorWhenItOpens_OutsideOfElevatorAndDoorOpensOnOurFloor_GoInElevator(
-            [Frozen] Mock<ICallPanel> panel,
-            [Frozen] Mock<IElevatorService> elevatorService,
-            PersonActions personActions)
+        [Theory, DapperAutoData()]
+        public void EnterDoor_OutsideOfElevatorDoorOpen_Succeed(
+            [Frozen]Mock<ICallPanel> panel,
+            PersonActions actions)
         {
             // Arrange
             panel.Setup(x => x.IsDoorOpen).Returns(true);
 
             // Act
-            await personActions.EnterDoorWhenItOpensAsync(CancellationToken.None).ConfigureAwait(false);
-
+            actions.EnterDoor();
+            
             // Assert
-            personActions.CheckSurroundings().Should().Be("In elevator"); // TODO: Shouldn't be magic string
+            actions.CheckSurroundings().Should().Be("In elevator");
         }
 
-        [Theory]
-        [DapperAutoData()]
-        public async void EnterDoorWhenItOpens_InsideElevator_GoOutsideOfElevator(
-            Mock<ICallPanel> newFloorPanel, 
-            [Frozen] Mock<ICallPanel> panel,
-            [Frozen] Mock<IElevatorService> elevatorService,
-            PersonActions personActions)
+        [Theory, DapperAutoData()]
+        public void EnterDoor_OutsideOfElevatorDoorClosed_DoesNotSucceed(
+            [Frozen]Mock<ICallPanel> panel,
+            PersonActions actions)
         {
             // Arrange
-            newFloorPanel.Setup(x => x.IsDoorOpen).Returns(true);
+            panel.Setup(x => x.IsDoorOpen).Returns(false);
+            panel.Setup(x => x.Floor).Returns(1);
+
+            // Act
+            actions.EnterDoor();
+
+            // Assert
+            actions.CheckSurroundings().Should().Be("Floor 1");
+        }
+
+        [Theory, DapperAutoData()]
+        public void EnterDoor_InElevatorDoorOpen_Succeed(
+            [Frozen]Mock<ICallPanel> panel,
+            PersonActions actions)
+        {
+            // Arrange
             panel.Setup(x => x.IsDoorOpen).Returns(true);
-            await personActions.EnterDoorWhenItOpensAsync(CancellationToken.None).ConfigureAwait(false);
+            panel.Setup(x => x.Floor).Returns(1);
+            actions.EnterDoor();
 
             // Act
-            await personActions.EnterDoorWhenItOpensAsync(CancellationToken.None).ConfigureAwait(false);
+            actions.EnterDoor();
 
             // Assert
-            personActions.CheckSurroundings().Should().Be($"Floor {newFloorPanel.Object.Floor}");
+            actions.CheckSurroundings().Should().Be("Floor 1");
         }
 
-        [Theory]
-        [DapperAutoData()]
-        public async void EnterDoorWhenItOpens_Cancel_ThrowsException(
-            [Frozen] Mock<ICallPanel> panel,
-            [Frozen] Mock<IElevatorService> elevatorService,
-            PersonActions personActions)
+        [Theory, DapperAutoData()]
+        public void EnterDoor_InElevatorDoorClosed_DoesNotSucceed(
+            [Frozen]Mock<ICallPanel> panel,
+            PersonActions actions)
         {
             // Arrange
-            CancellationTokenSource cts = new CancellationTokenSource();
-            panel.Setup(x => x.IsDoorOpen).Returns(Cancel(cts));
-            elevatorService.Setup(x => x.GetCallPanelForFloor(It.IsAny<int>())).Returns(panel.Object);
-            await personActions.EnterDoorWhenItOpensAsync(cts.Token).ConfigureAwait(false);
- 
+            panel.SetupSequence(x => x.IsDoorOpen)
+                .Returns(true)
+                .Returns(false);
+            actions.EnterDoor();
+
             // Act
-            try
-            {
-                await personActions.EnterDoorWhenItOpensAsync(cts.Token).ConfigureAwait(true);
-                for (int i = 0; i < 100; i++)
-                {
-                    await Task.Delay(100).ConfigureAwait(false);
-                }
-                throw new AssertionFailedException("OperationCanceledException was not thrown");
-            }
-            catch (TaskCanceledException e)
-            {
-                e.Should().NotBeNull();
-            }
-            
+            actions.EnterDoor();
 
             // Assert
-            
+            actions.CheckSurroundings().Should().Be("In elevator");
         }
-        
-        private bool Cancel(CancellationTokenSource cts)
-        {
-           
-            cts.CancelAfter(1000);
-           
-            return false;
 
-        }
     }
 }

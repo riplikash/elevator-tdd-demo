@@ -10,6 +10,7 @@ namespace ElevatorConsoleApplication
     {
         static int Main(string[] args)
         {
+            Exception e;
             try
             {
                 return AsyncContext.Run(() => MainAsync(args));
@@ -17,7 +18,7 @@ namespace ElevatorConsoleApplication
             catch (Exception ex)
             {
                 Console.Error.WriteLine(ex);
-
+                e = ex;
                 return -1;
             }
             finally

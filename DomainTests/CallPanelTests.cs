@@ -108,7 +108,5 @@ namespace DomainTests
             callInterface.IsDoorOpen.Should().BeFalse();
         }
 
-        // TODO: Down button disabled on first floor
-        // TODO: Up button disabled on top flor
     }
 }
