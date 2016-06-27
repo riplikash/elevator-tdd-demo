@@ -13,6 +13,7 @@ namespace ElevatorConsoleApplication.Startup
             Bind<ICallPanel>().To<CallPanel>();
             Bind<IElevator>().To<DemoElevator>().InSingletonScope();
             Bind<IElevatorControls>().To<ElevatorControls>().InSingletonScope();
+            Bind<IPersonActions>().To<PersonActions>().InSingletonScope();
             Bind<IElevatorExteriorActions>().To<ElevatorExteriorActions>().InSingletonScope();
             Bind<IElevatorInteriorActions>().To<ElevatorInteriorActions>().InSingletonScope();
 

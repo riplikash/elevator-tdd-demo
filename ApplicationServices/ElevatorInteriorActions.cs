@@ -1,36 +1,71 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Domain;
 
 namespace ApplicationServices
 {
-    public class ElevatorInteriorActions : PersonActions, IElevatorInteriorActions
+    public class ElevatorInteriorActions : IPersonActions, IElevatorInteriorActions
     {
+        private readonly IElevatorService elevatorService;
+        private readonly IElevatorControls controls;
+        private readonly IPersonActions personActions;
+
         public ElevatorInteriorActions(
             IElevatorService elevatorService,
-            IElevatorControls controls) : base(elevatorService, elevatorService.GetCallPanelForFloor(1), controls)
+            IElevatorControls controls,
+            IPersonActions personActions)
         {
-
+            if (controls == null) throw new ArgumentNullException(nameof(controls));
+            this.elevatorService = elevatorService;
+            this.controls = controls;
+            this.personActions = personActions;
         }
 
         public string CheckCurrentFloorAsync()
         {
-            return base.CheckElevatorPositionAsync();
+            return elevatorService.CurrentFloor.ToString();
         }
 
        
         public async Task PushButtonNumberAsync(int desiredFloor)
         {
-            if (InElevator == false) throw new Exception("You are not in an elevator");
-            if (ElevatorService.CurrentFloor > desiredFloor)
+            if (InElevator() == false) throw new Exception("You are not in an elevator");
+            if (elevatorService.CurrentFloor > desiredFloor)
             {
-                await ElevatorService.DownCallRequestAsync(desiredFloor).ConfigureAwait(false);
+                await elevatorService.DownCallRequestAsync(desiredFloor).ConfigureAwait(false);
             }
             else
             {
-                await ElevatorService.UpCallRequestAsync(desiredFloor).ConfigureAwait(false);
+                await elevatorService.UpCallRequestAsync(desiredFloor).ConfigureAwait(false);
             }
-            CallPanel = ElevatorService.GetCallPanelForFloor(desiredFloor);
+            personActions.CallPanel = elevatorService.GetCallPanelForFloor(desiredFloor);
+        }
+
+        private bool InElevator()
+        {
+            return !personActions.CheckSurroundings().StartsWith("F");
+        }
+
+        public string CheckElevatorPosition()
+        {
+            return personActions.CheckElevatorPosition();
+        }
+
+        public string CheckSurroundings()
+        {
+            return personActions.CheckSurroundings();
+        }
+
+        public Task EnterDoorWhenItOpensAsync(CancellationToken token)
+        {
+            return personActions.EnterDoorWhenItOpensAsync(token);
+        }
+
+        public ICallPanel CallPanel
+        {
+            get { return personActions.CallPanel; }
+            set { personActions.CallPanel = value; }
         }
     }
 }

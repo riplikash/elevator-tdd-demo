@@ -17,7 +17,12 @@ namespace ElevatorConsoleApplication
             catch (Exception ex)
             {
                 Console.Error.WriteLine(ex);
+
                 return -1;
+            }
+            finally
+            {
+                Console.ReadKey();
             }
         }
 

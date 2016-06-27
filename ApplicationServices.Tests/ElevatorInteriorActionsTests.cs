@@ -38,21 +38,22 @@ namespace ApplicationServices.Tests
         public async void PushButton1_CallFromAnyFloor_NewFloorCallPanelIsSet(
             int callingFloor,
             Mock<ICallPanel> newPanel,
+            [Frozen] Mock<IPersonActions> personActions,
             [Frozen] Mock<ICallPanel> originalCallPanel,
             [Frozen] Mock<IElevatorService> elevatorService,
             ElevatorInteriorActions elevator)
         {
             // arrange
+            personActions.Setup(x => x.CheckSurroundings()).Returns("In Elevator");
             elevatorService.Setup(x => x.GetCallPanelForFloor(It.IsAny<int>())).Returns(newPanel.Object);
             newPanel.Setup(x => x.IsDoorOpen).Returns(true);
-            await GetInElevator(originalCallPanel, elevator).ConfigureAwait(false);
 
             // act
             await elevator.PushButtonNumberAsync(1).ConfigureAwait(false);
             await elevator.EnterDoorWhenItOpensAsync(CancellationToken.None).ConfigureAwait(false);
 
             // assert
-            newPanel.Verify(x => x.IsDoorOpen, Times.Once);
+            elevator.CallPanel.Should().Be(newPanel.Object);
         }
 
         private static async Task GetInElevator(Mock<ICallPanel> originalCallPanel, ElevatorInteriorActions elevator)

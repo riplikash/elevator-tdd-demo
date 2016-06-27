@@ -12,7 +12,7 @@ namespace ApplicationServices.Tests
         {
         }
 
-        public class AutoFixtureMoqDataAttribute : AutoDataAttribute
+        private class AutoFixtureMoqDataAttribute : AutoDataAttribute
         {
             public AutoFixtureMoqDataAttribute()
                 : base(new Fixture()
@@ -22,7 +22,8 @@ namespace ApplicationServices.Tests
             {
             }
         }
-        internal class ProjectCustomizations : ICustomization
+
+        private class ProjectCustomizations : ICustomization
         {
             public void Customize(IFixture fixture)
             {

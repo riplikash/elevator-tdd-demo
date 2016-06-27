@@ -29,11 +29,13 @@ namespace ApplicationServices.Tests
         [DapperAutoData(4)]
         public async void PushGoingUpButtoAsync_AnyFloor_UpCallRequestAdded(
             int floor,
+            [Frozen] Mock<IPersonActions> personActions,
             [Frozen] Mock<IElevatorService> elevatorService,
             [Frozen] Mock<ICallPanel> callPanel,
             ElevatorExteriorActions actions)
         {
             // Arrange
+            personActions.Setup(x => x.CheckSurroundings()).Returns("Floor 1");
             callPanel.Setup(x => x.Floor).Returns(floor);
 
             // Act
@@ -88,11 +90,13 @@ namespace ApplicationServices.Tests
         [DapperAutoData(5)]
         public async void PushGoingDownButtonAsync_AnyFloor_DownCallRequestAdded(
             int floor,
+            [Frozen] Mock<IPersonActions> personActions,
             [Frozen] Mock<IElevatorService> elevatorService,
             [Frozen] Mock<ICallPanel> callPanel,
             ElevatorExteriorActions actions)
         {
             // Arrange
+            personActions.Setup(x => x.CheckSurroundings()).Returns("Floor 1");
             callPanel.Setup(x => x.Floor).Returns(floor);
 
             // Act

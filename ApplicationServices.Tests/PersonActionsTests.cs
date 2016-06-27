@@ -27,7 +27,7 @@ namespace ApplicationServices.Tests
             elevatorService.Setup(x => x.CurrentFloor).Returns(floor);
 
             // Act
-            var reportedFloor = personActions.CheckElevatorPositionAsync();
+            var reportedFloor = personActions.CheckElevatorPosition();
 
             // Assert
             reportedFloor.Should().Be(floor.ToString());
