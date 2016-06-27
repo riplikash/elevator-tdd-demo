@@ -1,28 +1,45 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 
 namespace Domain
 {
     public class CallPanel : ICallPanel
     {
-        // TODO: Make threadsafe
         private readonly IElevatorService elevatorService;
-        public string ElevatorFloorDisplay { get; private set; }
+        private int floor;
+        private bool isDoorOpen;
+        private string elevatorFloorDisplay;
+
+        public string ElevatorFloorDisplay
+        {
+            get { return Volatile.Read(ref elevatorFloorDisplay); }
+            private set { Volatile.Write(ref elevatorFloorDisplay, value); }
+        }
+
         private static int _floorClounter = 1;
         public CallPanel(IElevatorService elevatorService)
         {
             this.elevatorService = elevatorService;
             Floor = _floorClounter;
-            System.Threading.Interlocked.Increment(ref _floorClounter);
+            Interlocked.Increment(ref _floorClounter);
             elevatorService.RegisterCallPanel(this);
             IsDoorOpen = false;
             ElevatorFloorDisplay = "";
         }
 
-        public int Floor { get; set; }
+        public int Floor
+        {
+            get { return Volatile.Read(ref floor); }
+            private set { Volatile.Write(ref floor, value); }
+        }
 
         public int TotalFloors => elevatorService.TotalFloors;
 
-        public bool IsDoorOpen { get; private set; }
+        public bool IsDoorOpen
+        {
+            get { return Volatile.Read(ref isDoorOpen); }
+            private set { Volatile.Write(ref isDoorOpen, value); }
+        }
 
 
         public async Task PushUpCallAsync()

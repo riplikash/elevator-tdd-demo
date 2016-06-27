@@ -57,7 +57,6 @@ namespace ElevatorConsoleApplication.Engine
             Console.WriteLine("");
             if (choice < 6) await interiorActions.PushButtonNumberAsync(choice).ConfigureAwait(false);
             else interiorActions.EnterDoor();
-
         }
 
 

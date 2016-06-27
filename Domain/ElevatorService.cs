@@ -8,7 +8,8 @@ using Timer = System.Timers.Timer;
 
 namespace Domain
 {
-    public class ElevatorService : IElevatorService
+    
+    public class ElevatorService : IElevatorService, IDisposable
     {
         // TODO: Change to ConcurrentDictionary
         public HashSet<int> UpCalls { get; } = new HashSet<int>();
@@ -31,6 +32,7 @@ namespace Domain
         private bool requestStop;
         private readonly IElevator elevator;
         private int currentFloor;
+        private bool disposed;
 
         public ElevatorService(IElevator elevator)
         {
@@ -189,6 +191,27 @@ namespace Domain
         public void RegisterCallPanel(ICallPanel newPanel)
         {
             ExteriorCallPanels.TryAdd(newPanel.Floor, newPanel);
+        }
+
+        public void Dispose()
+        {
+            // WARNING: Do not make this method virtual. A derived class should not be able to override this method.
+
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        void Dispose(bool disposing)
+        {
+            if (disposed)
+                return;
+
+            if (disposing)
+            {
+                timer.Dispose();
+            }
+
+            disposed = true;
         }
     }
 
