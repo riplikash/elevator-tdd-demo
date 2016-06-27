@@ -111,7 +111,7 @@ namespace Domain
                     Console.WriteLine($"Opening door on level {CurrentFloor}");
                     var callPanel = GetCallPanelForFloor(CurrentFloor);
                     await callPanel.DoorOpenEventHandlerAsync().ConfigureAwait(false);
-//                    await Task.Delay(3000).ConfigureAwait(false); // TODO: Get this configurable
+                    await Task.Delay(3000).ConfigureAwait(false); // TODO: Get this configurable
                     await callPanel.DoorCloseEventHandlerAsync().ConfigureAwait(false);
                     Console.WriteLine($"Closing door on level {CurrentFloor}");
 

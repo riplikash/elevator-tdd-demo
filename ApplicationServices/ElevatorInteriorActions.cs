@@ -8,9 +8,9 @@ namespace ApplicationServices
     {
         public ElevatorInteriorActions(
             IElevatorService elevatorService,
-            ICallPanel callPanel,
-            IElevatorControls controls) : base(elevatorService, callPanel, controls)
+            IElevatorControls controls) : base(elevatorService, elevatorService.GetCallPanelForFloor(1), controls)
         {
+
         }
 
         public string CheckCurrentFloorAsync()

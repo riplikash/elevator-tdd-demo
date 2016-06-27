@@ -117,7 +117,7 @@ namespace ApplicationServices.Tests
                 }
                 throw new AssertionFailedException("OperationCanceledException was not thrown");
             }
-            catch (OperationCanceledException e)
+            catch (TaskCanceledException e)
             {
                 e.Should().NotBeNull();
             }

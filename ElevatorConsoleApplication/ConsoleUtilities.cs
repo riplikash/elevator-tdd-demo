@@ -42,6 +42,12 @@ namespace ElevatorConsoleApplication
         {
             int rtChoice;
             Console.WriteLine(message);
+            int i = 1;
+            foreach (var option in options)
+            {
+                Console.WriteLine($"{i}) {option}");
+                i++;
+            }
             
             while (true)
             {

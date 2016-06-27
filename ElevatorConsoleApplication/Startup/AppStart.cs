@@ -1,32 +1,24 @@
 ﻿using System;
-using ApplicationServices;
+using System.Threading.Tasks;
 using Domain;
-using Infrastructure;
+using ElevatorConsoleApplication.Engine;
 using Ninject;
-using Ninject.Modules;
 
 namespace ElevatorConsoleApplication.Startup
 {
     public class AppStart
     {
-        public static void Run()
+        public async Task Run()
         {
-            IKernel kernel = new StandardKernel(new DIConfig());
+            IKernel kernel = new StandardKernel(new DependencyInjectionConfig());
             IElevatorService service = kernel.Get<IElevatorService>();
-        }
-    }
-
-    public class DIConfig : NinjectModule
-    {
-        public override void Load()
-        {
-            Bind<IElevatorService>().To<ElevatorService>().InSingletonScope();
-            Bind<ICallPanel>().To<CallPanel>();
-            Bind<IElevator>().To<DemoElevator>().InSingletonScope();
-            Bind<IElevatorControls>().To<ElevatorControls>().InSingletonScope();
-            Bind<IElevatorExteriorActions>().To<ElevatorExteriorActions>().InSingletonScope();
-            Bind<IElevatorInteriorActions>().To<ElevatorInteriorActions>().InSingletonScope();
-
+            for (int i = 0; i < 5; i++)
+            {
+                kernel.Get<ICallPanel>();
+            }
+            await service.StartAsync().ConfigureAwait(false);
+            var engine = kernel.Get<Engine.Engine>();
+            await engine.ExteriorScenarioRun().ConfigureAwait(false);
         }
     }
 }

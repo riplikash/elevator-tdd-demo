@@ -63,8 +63,10 @@ namespace ApplicationServices
                 }
                 else if (!inElevator && callPanel != null)
                 {
+                    Console.WriteLine("Attempting to enter door at floor" + callPanel.Floor);
                     if (callPanel.IsDoorOpen)
                     {
+                        Console.WriteLine("Door is open. Entering door.");
                         inElevator = true;
                         return;
                     }

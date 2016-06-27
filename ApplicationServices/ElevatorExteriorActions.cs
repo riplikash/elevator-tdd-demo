@@ -6,7 +6,7 @@ namespace ApplicationServices
 {
     public class ElevatorExteriorActions : PersonActions, IElevatorExteriorActions
     {
-        public ElevatorExteriorActions(IElevatorService elevatorService, ICallPanel callPanel, IElevatorControls controls) : base(elevatorService, callPanel, controls)
+        public ElevatorExteriorActions(IElevatorService elevatorService,  IElevatorControls controls) : base(elevatorService, elevatorService.GetCallPanelForFloor(1), controls)
         {
         }
 

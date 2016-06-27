@@ -7,7 +7,7 @@ namespace Domain
         // TODO: Make threadsafe
         private readonly IElevatorService elevatorService;
         public string ElevatorFloorDisplay { get; private set; }
-        private static int _floorClounter = 0;
+        private static int _floorClounter = 1;
         public CallPanel(IElevatorService elevatorService)
         {
             this.elevatorService = elevatorService;

@@ -165,7 +165,7 @@ namespace DomainTests
             {
                 await Task.Delay(100).ConfigureAwait(false);
             }
-            await Task.Delay(3000).ConfigureAwait(false);
+            await service.StopAsync().ConfigureAwait(false);
             elevator.Verify(x => x.MoveUpAsync(), Times.Exactly(4));
         }
 

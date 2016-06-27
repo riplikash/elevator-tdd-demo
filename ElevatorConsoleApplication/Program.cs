@@ -1,18 +1,29 @@
 ﻿using System;
+using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using ElevatorConsoleApplication.Startup;
 
 namespace ElevatorConsoleApplication
 {
     public static class Program
     {
-        static void Main(string[] args)
+        static int Main(string[] args)
         {
-            AppStart.Run();
-            var choice = ConsoleUtilities.GetChoiceFromUser("Choose up or down", "Up", "Down");
-            Console.WriteLine();
-            Console.WriteLine("The Value You entered is : " + choice);
-            Console.ReadKey();
+            try
+            {
+                return AsyncContext.Run(() => MainAsync(args));
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine(ex);
+                return -1;
+            }
         }
+
+        static async Task<int> MainAsync(string[] args)
+        {
+        
+      }
 
     }
 }
