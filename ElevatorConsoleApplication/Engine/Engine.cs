@@ -38,7 +38,7 @@ namespace ElevatorConsoleApplication.Engine
                     else
                     {
                         await RunExteriorScenario().ConfigureAwait(false);
-                        return;
+                        
                     }
                         
 
@@ -112,7 +112,7 @@ namespace ElevatorConsoleApplication.Engine
                     break;
                 case 3:
                     exteriorActions.EnterDoor();
-                    return;
+                    break;
             }
         }
     }
