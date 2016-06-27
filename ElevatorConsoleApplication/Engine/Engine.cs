@@ -43,8 +43,6 @@ namespace ElevatorConsoleApplication.Engine
                         
 
                 }
-                await Task.Delay(3000).ConfigureAwait(false);
-                Console.Clear();
             }
 
             
@@ -53,58 +51,69 @@ namespace ElevatorConsoleApplication.Engine
         private async Task RunInteriorScenario()
         {
             int choice = 0;
-            List<string> interiorButtons = new List<string> {"1", "2", "3", "4", "5"};
-            choice = ConsoleUtilities.GetChoiceFromUser("You see a panel with two buttons", interiorButtons.ToArray());
+            List<string> options = new List<string> {"1", "2", "3", "4", "5"};
+            if (interiorActions.CallPanel != null) options.Add("Exit elevator");
+            choice = ConsoleUtilities.GetChoiceFromUser("You see a panel with two buttons", options.ToArray());
             Console.WriteLine("");
-            await interiorActions.EnterDoorWhenItOpensAsync(CancellationToken.None).ConfigureAwait(true);
-            await interiorActions.PushButtonNumberAsync(choice).ConfigureAwait(false);
-            while (interiorActions.CheckElevatorPosition() != choice.ToString())
-            {
-                await Task.Delay(500).ConfigureAwait(false);
-            }
+            if (choice < 6) await interiorActions.PushButtonNumberAsync(choice).ConfigureAwait(false);
+            else interiorActions.EnterDoor();
+
         }
+
 
         private async Task RunTopFloorScenario() 
         {
-            List<string> exteriorOptions = new List<string> { "Press Down Button" };
-            ConsoleUtilities.GetChoiceFromUser("You see a panel with one button", exteriorOptions.ToArray());
+            List<string> options = new List<string> { "Press Down Button" };
+            if (interiorActions.CallPanel != null) options.Add("Enter elevator");
+            var choice = ConsoleUtilities.GetChoiceFromUser("You see a panel with one button", options.ToArray());
             Console.WriteLine("");
-            await exteriorActions.EnterDoorWhenItOpensAsync(CancellationToken.None).ConfigureAwait(false);
-            await exteriorActions.PushGoingDownButtonAsync().ConfigureAwait(false);
-            await Task.Delay(3000).ConfigureAwait(false);
+            switch (choice)
+            {
+                case 1:
+                    await exteriorActions.PushGoingDownButtonAsync().ConfigureAwait(false);
+                    break;
+                case 2:
+                    exteriorActions.EnterDoor();
+                    break;
+            }
         }
 
         private async Task RunFirstFloorScenario()
         {
-            List<string> exteriorOptions = new List<string> { "Press Up Button" };
-            ConsoleUtilities.GetChoiceFromUser("You see a panel with one button", exteriorOptions.ToArray());
+            List<string> options = new List<string> { "Press Up Button" };
+            if (interiorActions.CallPanel != null) options.Add("Enter elevator");
+            var choice = ConsoleUtilities.GetChoiceFromUser("You see a panel with one button", options.ToArray());
             Console.WriteLine("");
-            await exteriorActions.EnterDoorWhenItOpensAsync(CancellationToken.None).ConfigureAwait(false);
-            await exteriorActions.PushGoingUpButtonAsync().ConfigureAwait(false);
-            await Task.Delay(3000).ConfigureAwait(false);
-        }
-
-        private async Task RunExteriorScenario()
-        {
-            int choice = 0;
-            List<string> exteriorOptions = new List<string> {"Press Up Button", "Press Down Button"};
-            choice = ConsoleUtilities.GetChoiceFromUser("You see a panel with two buttons", exteriorOptions.ToArray());
-            Console.WriteLine("");
-            await exteriorActions.EnterDoorWhenItOpensAsync(CancellationToken.None).ConfigureAwait(false);
             switch (choice)
             {
                 case 1:
                     await exteriorActions.PushGoingUpButtonAsync().ConfigureAwait(false);
-                    await Task.Delay(3000).ConfigureAwait(false);
                     break;
                 case 2:
-                    await exteriorActions.PushGoingDownButtonAsync().ConfigureAwait(true);
-                    await Task.Delay(3000).ConfigureAwait(false);
+                    exteriorActions.EnterDoor();
+                    break;
+            }
+            
+        }
+
+        private async Task RunExteriorScenario()
+        {
+            List<string> options = new List<string> {"Press Up Button", "Press Down Button"};
+            if (interiorActions.CallPanel != null) options.Add("Enter elevator");
+            var choice = ConsoleUtilities.GetChoiceFromUser("You see a panel with two buttons", options.ToArray());
+            Console.WriteLine("");
+            switch (choice)
+            {
+                case 1:
+                    await exteriorActions.PushGoingUpButtonAsync().ConfigureAwait(false);
+                    break;
+                case 2:
+                    await exteriorActions.PushGoingDownButtonAsync().ConfigureAwait(false);
                     break;
                 case 3:
+                    exteriorActions.EnterDoor();
                     return;
             }
-            return;
         }
     }
 }

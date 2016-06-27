@@ -51,7 +51,7 @@ namespace ElevatorConsoleApplication
             
             while (true)
             {
-                Console.Write($"Select 1-{options.Length}: ");
+                Console.WriteLine($"Select 1-{options.Length}: ");
                 rtChoice = GetIntFromUser();
                 if (rtChoice < 0 || rtChoice > options.Length)
                 {

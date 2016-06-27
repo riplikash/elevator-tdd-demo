@@ -57,9 +57,10 @@ namespace ApplicationServices
             return personActions.CheckSurroundings();
         }
 
-        public Task EnterDoorWhenItOpensAsync(CancellationToken token)
+
+        public void EnterDoor()
         {
-            return personActions.EnterDoorWhenItOpensAsync(token);
+            personActions.EnterDoor();
         }
 
         public ICallPanel CallPanel

@@ -8,21 +8,19 @@ namespace ApplicationServices
     public class ElevatorExteriorActions :  IElevatorExteriorActions
     {
         private readonly IElevatorService elevatorService;
-        private readonly ICallPanel panel;
         private readonly IPersonActions personActions;
 
         public ElevatorExteriorActions(IElevatorService elevatorService, IPersonActions personActions)
         {
             this.elevatorService = elevatorService;
             this.personActions = personActions;
-            panel = this.elevatorService.GetCallPanelForFloor(1);
         }
 
         public async Task PushGoingUpButtonAsync()
         {
-            if (panel.Floor == elevatorService.TotalFloors) throw new Exception("No up button on top floor");
-            if (InElevator() || panel == null) throw new Exception("You are not in an elevator");
-            await elevatorService.UpCallRequestAsync(panel.Floor).ConfigureAwait(false);
+            if (personActions.CallPanel.Floor == elevatorService.TotalFloors) throw new Exception("No up button on top floor");
+            if (InElevator() || personActions.CallPanel == null) throw new Exception("You are not in an elevator");
+            await elevatorService.UpCallRequestAsync(personActions.CallPanel.Floor).ConfigureAwait(false);
         }
 
         private bool InElevator()
@@ -32,9 +30,9 @@ namespace ApplicationServices
 
         public async Task PushGoingDownButtonAsync()
         {
-            if (panel.Floor == 1) throw new Exception("No down button on first floor");
-            if (InElevator() || panel == null) throw new Exception("You are not in an elevator");
-            await elevatorService.DownCallRequestAsync(panel.Floor).ConfigureAwait(false);
+            if (personActions.CallPanel.Floor == 1) throw new Exception("No down button on first floor");
+            if (InElevator() || personActions.CallPanel == null) throw new Exception("You are not in an elevator");
+            await elevatorService.DownCallRequestAsync(personActions.CallPanel.Floor).ConfigureAwait(false);
         }
 
         public string CheckElevatorPosition()
@@ -47,9 +45,9 @@ namespace ApplicationServices
             return personActions.CheckSurroundings();
         }
 
-        public Task EnterDoorWhenItOpensAsync(CancellationToken token)
+        public void EnterDoor()
         {
-            return personActions.EnterDoorWhenItOpensAsync(token);
+            personActions.EnterDoor();
         }
 
         public ICallPanel CallPanel

@@ -14,10 +14,10 @@ namespace ApplicationServices.Tests
 {
     public class ElevatorExteriorActionsTests
     {
-        private static async Task GetInElevator(Mock<ICallPanel> originalCallPanel, ElevatorExteriorActions elevator)
+        private static void GetInElevator(Mock<ICallPanel> originalCallPanel, ElevatorExteriorActions elevator)
         {
             originalCallPanel.Setup(x => x.IsDoorOpen).Returns(true);
-            await elevator.EnterDoorWhenItOpensAsync(CancellationToken.None).ConfigureAwait(false);
+            elevator.EnterDoor();
         }
 
         #region PushGoingUpButtonAsync
@@ -65,12 +65,12 @@ namespace ApplicationServices.Tests
         }
 
         [Theory, DapperAutoData()]
-        public async void PushGoingUpButton_NotInElevator_ThrowsException(
+        public void PushGoingUpButton_NotInElevator_ThrowsException(
             [Frozen] Mock<ICallPanel> originalCallPanel,
             ElevatorExteriorActions elevator)
         {
             // Arrange
-            await GetInElevator(originalCallPanel, elevator).ConfigureAwait(false);
+            GetInElevator(originalCallPanel, elevator);
 
             // act
             Func<Task> act = async () => await elevator.PushGoingDownButtonAsync().ConfigureAwait(false);
@@ -126,12 +126,12 @@ namespace ApplicationServices.Tests
         }
 
         [Theory, DapperAutoData()]
-        public async void PushGoingDownButton_NotInElevator_ThrowsException(
+        public void PushGoingDownButton_NotInElevator_ThrowsException(
             [Frozen] Mock<ICallPanel> originalCallPanel,
             ElevatorExteriorActions elevator)
         {
             // Arrange
-            await GetInElevator(originalCallPanel, elevator).ConfigureAwait(false);
+            GetInElevator(originalCallPanel, elevator);
 
             // act
             Func<Task> act = async () => await elevator.PushGoingDownButtonAsync().ConfigureAwait(false);

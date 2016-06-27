@@ -8,7 +8,7 @@ namespace ApplicationServices
     {
         string CheckElevatorPosition();
         string CheckSurroundings();
-        Task EnterDoorWhenItOpensAsync(CancellationToken token);
+        void EnterDoor();
         ICallPanel CallPanel { get; set; }
     }
 }

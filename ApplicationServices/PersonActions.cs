@@ -32,51 +32,42 @@ namespace ApplicationServices
             return $"Floor {CallPanel.Floor}";
         }
 
+        public void EnterDoor()
+        {
+            if (inElevator)
+            {
+                CallPanel = elevatorService.GetCallPanelForFloor(elevatorService.CurrentFloor);
+                if (CallPanel.IsDoorOpen)
+                {
+                    Console.WriteLine($"Door is open. Exiting onto floor {CallPanel.Floor}");
+                    inElevator = false;
+                    CallPanel = elevatorService.GetCallPanelForFloor(elevatorService.CurrentFloor);
+                }
+                else
+                {
+                    Console.WriteLine("Door is not open");
+                }
+            }
+            else
+            {
+                if (CallPanel.IsDoorOpen)
+                {
+                    Console.WriteLine($"Door is open. Entering door on floor {CallPanel.Floor}");
+                    inElevator = true;
+                    CallPanel = null;
+                }
+                else
+                {
+                    Console.WriteLine("Door is not open");
+                }
+            }
+        }
+
         public ICallPanel CallPanel
         {
             get { return Volatile.Read(ref callPanel); }
             set { Volatile.Write(ref callPanel, value); }
         }
 
-        // TODO : Put cancellation token here and let UI handle the cancellation
-        public Task EnterDoorWhenItOpensAsync(CancellationToken token)
-        {
-            return Task.Run(() => EnterDoorWaitModeAsync(token), token); 
-        }
-
-        private async void EnterDoorWaitModeAsync(CancellationToken token)
-        {
-            // TODO: Really should be timer based, but this will work for now 
-            while (!token.IsCancellationRequested)
-            {
-                if (inElevator && CallPanel != null)
-                {
-                    if (CallPanel.IsDoorOpen)
-                    {
-                        inElevator = false;
-                        return;
-                    }
-                }
-                else if (inElevator & CallPanel == null)
-                {
-                    throw new ArgumentException("You haven't selected a floor");
-                }
-                else if (!inElevator && CallPanel != null)
-                {
-                    if (CallPanel.IsDoorOpen)
-                    {
-                        Console.WriteLine($"Door is open. Entering door on floor {CallPanel.Floor}");
-                        inElevator = true;
-                        return;
-                    }
-                }
-                else
-                {
-                    throw new Exception("Invalid state");
-                }
-                await Task.Delay(300, token).ConfigureAwait(false);
-            }
-            throw new OperationCanceledException();
-        }
     }
 }
