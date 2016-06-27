@@ -9,11 +9,12 @@ using Timer = System.Timers.Timer;
 namespace Domain
 {
     
-    public class ElevatorService : IElevatorService, IDisposable
+    public sealed class ElevatorService : IElevatorService, IDisposable
     {
         // TODO: Change to ConcurrentDictionary
-        public HashSet<int> UpCalls { get; } = new HashSet<int>();
-        public HashSet<int> DownCalls { get; } = new HashSet<int>();
+        public HashSet<int> UpCalls => Volatile.Read(ref upCalls);
+
+        public HashSet<int> DownCalls => Volatile.Read(ref downCalls);
 
         private ConcurrentDictionary<int, ICallPanel> ExteriorCallPanels { get; }
 
@@ -33,6 +34,8 @@ namespace Domain
         private readonly IElevator elevator;
         private int currentFloor;
         private bool disposed;
+        private HashSet<int> upCalls = new HashSet<int>();
+        private HashSet<int> downCalls = new HashSet<int>();
 
         public ElevatorService(IElevator elevator)
         {
@@ -158,14 +161,14 @@ namespace Domain
         
         public Task UpCallRequestAsync(int floor)
         {
-            UpCalls.Add(floor);
+            lock (UpCalls) UpCalls.Add(floor);
             return Task.CompletedTask;
 
         }
 
         public Task DownCallRequestAsync(int floor)
         {
-            DownCalls.Add(floor);
+            lock (DownCalls) DownCalls.Add(floor);
             return Task.CompletedTask;
         }
 
