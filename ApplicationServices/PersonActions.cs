@@ -45,10 +45,11 @@ namespace ApplicationServices
             cts.CancelAfter(11000); // TODO: make configurable. This is based on the curret setup of 5 floors
                 // TODO: handle cancellation and timeout
                 // TODO: eventually the cancellation token should be passed in here, but for now I'm just going to configure it on a timeout
-            return EnterDoorWaitModeAsync(cts.Token); 
+
+            return Task.Run(() => EnterDoorWaitModeAsync(cts.Token), cts.Token); 
         }
 
-        private Task EnterDoorWaitModeAsync(CancellationToken token)
+        private void EnterDoorWaitModeAsync(CancellationToken token)
         {
             // TODO: Really should be timer based, but this will work for now 
             while (!token.IsCancellationRequested)
@@ -58,7 +59,7 @@ namespace ApplicationServices
                     if (callPanel.IsDoorOpen)
                     {
                         inElevator = false;
-                        return Task.CompletedTask;
+                        return;
                     }
                 }
                 else if (inElevator & callPanel == null)
@@ -70,16 +71,15 @@ namespace ApplicationServices
                     if (callPanel.IsDoorOpen)
                     {
                         inElevator = true;
-                        return Task.CompletedTask;
+                        return;
                     }
                 }
                 else
                 {
                     throw new Exception("Invalid state");
                 }
-                Thread.Sleep(200);
+                Task.Delay(300, token);
             }
-
             throw new OperationCanceledException();
         }
     }

@@ -13,8 +13,6 @@ namespace ElevatorConsoleApplication.Startup
         {
             IKernel kernel = new StandardKernel(new DIConfig());
             IElevatorService service = kernel.Get<IElevatorService>();
-            Console.WriteLine("hey");
-
         }
     }
 

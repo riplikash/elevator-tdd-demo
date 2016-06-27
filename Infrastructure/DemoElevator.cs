@@ -8,14 +8,12 @@ namespace Infrastructure
     {
         public Task MoveUpAsync()
         {
-            Thread.Sleep(3000);
-            return Task.CompletedTask;
+            return Task.Delay(3000);
         }
 
         public Task MoveDownAsync()
         {
-            Thread.Sleep(3000);
-            return Task.CompletedTask;
+            return Task.Delay(3000);
         }
     }
 }
