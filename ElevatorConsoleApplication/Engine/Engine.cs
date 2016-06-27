@@ -64,7 +64,7 @@ namespace ElevatorConsoleApplication.Engine
             }
         }
 
-        private async Task RunTopFloorScenario()
+        private async Task RunTopFloorScenario() 
         {
             List<string> exteriorOptions = new List<string> { "Press Down Button" };
             ConsoleUtilities.GetChoiceFromUser("You see a panel with one button", exteriorOptions.ToArray());
